@@ -1,5 +1,5 @@
 from django.db import models
-from class_endereco import Endereco
+from endereco.models import Endereco
 class Cliente(models.Model):
     nome = models.CharField(max_length=255)
     cpf = models.CharField(max_length=14, unique=True)

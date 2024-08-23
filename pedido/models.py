@@ -1,7 +1,8 @@
 from django.db import models
-from class_produto import Produto
-from class_vendedor import Vendedor
-from class_cliente import Cliente
+from produto.models import Produto
+from vendedor.models import Vendedor
+from cliente.models import Cliente
+
 class Pedido(models.Model):
     id_venda = models.AutoField(primary_key=True)
     quantidade = models.PositiveIntegerField()
