@@ -9,10 +9,11 @@
     <h1>LISTA DE CLIENTES</h1>
     <ul>
     {% for client in cliente_list %}
-        <li>{{ client.nome }} - {{ client.cpf }} - {{ client.telefone }}</li>
+        <li>{{ client.nome }} - {{ client.cpf }} - {{ client.telefone }} - {{ client.endereco }}</li>
     {% endfor %}
     </ul>
-
+    <form action="/cadastrar_cliente" method="get">
+        <button type="submit">cadastrar cliente</button>
     
 
 </body>
