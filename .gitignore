@@ -31,3 +31,6 @@ Thumbs.db
 staticfiles/
 media/
 
+# Diretórios de migração Django
+*/migrations/
+!*/migrations/__init__.py

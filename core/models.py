@@ -44,7 +44,7 @@ class Pedido(models.Model):
     id_venda = models.AutoField(primary_key=True)
     quantidade = models.PositiveIntegerField()
     valor_prod = models.DecimalField(max_digits=10, decimal_places=2)
-    id_produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    id_produto = models.ForeignKey(Produto, on_delete=models.CASCADE, primary_key=True)
     id_vendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE)
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 
