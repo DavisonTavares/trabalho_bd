@@ -4,6 +4,9 @@ from endereco.models import Endereco
 from django.views.generic import ListView,CreateView
 from django.urls import reverse_lazy
 
+def cliente_form(request):
+    return render(request,'cliente\cliente_form.html')
+
 def cadastrar_cliente(request):
 
     nome = request.POST.get('nome')
