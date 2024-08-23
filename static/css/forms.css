@@ -1,0 +1,40 @@
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.custom-form div {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-form label {
+    font-size: 16px; /* Ajuste o tamanho da fonte conforme necessário */
+    color: #333; /* Cor do texto do rótulo */
+}
+
+.custom-form input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.custom-form input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.custom-form button {
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}

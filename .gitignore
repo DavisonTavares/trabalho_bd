@@ -6,13 +6,13 @@ __pycache__/
 *.sqlite3
 
 # Diretórios de ambiente virtual
-venv/
+.venv/
 env/
 .virtualenv/
 .idea/
 .vscode/
 .PyCharm/
-cliente/
+
 
 # Diretórios de configuração do sistema
 *.log
