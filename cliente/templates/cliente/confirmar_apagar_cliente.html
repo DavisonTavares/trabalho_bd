@@ -7,13 +7,41 @@
 <body>
     <h1>apagar Cliente</h1>
     <p>comfimar a remoção do <strong>{{cliente.nome}}</strong>? </p>
-    <form method="post">
+    <form id="delete-form" action="{% url 'deletar_cliente' cliente.id %}" method="post" style="display:inline;">
         {% csrf_token %}
-        <input type="hidden" name="id" value="{{ cliente.id }}">
-        <button type="submit">Apagar</button>
-        <a href="{% url "listar_cliente" %}" type="submit">Cancelar</button>
+        <button type="button" onclick="confirmDelete()">Excluir</button>
     </form>
-
+    
+    <script>
+        function confirmDelete() {
+            if (confirm("Tem certeza que deseja excluir este cliente?")) {
+                // Cria uma requisição DELETE usando JavaScript
+                const form = document.getElementById('delete-form');
+                const url = form.action;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redireciona ou atualiza a página após a exclusão
+                        window.location.href = "{% url 'lista_clientes' %}";
+                    } else {
+                        alert('Erro ao excluir o cliente.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir o cliente.');
+                });
+            }
+        }
+        </script>
     
 
 </body>

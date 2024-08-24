@@ -5,7 +5,7 @@ from cliente.views import cadastrar_cliente,listar_cliente,editar_cliente,deleta
 from produto.views import criar_produto
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('listar_cliente', listar_cliente.as_view(),name="listar_cliente"),
+    path('lista_clientes', listar_cliente.as_view(),name="lista_clientes"),
     path('', listar_cliente.as_view(),name="home"),
     path('cadastrar_cliente', cadastrar_cliente.as_view(), name='cadastrar_cliente'),
     path('cadastrar_poduto',criar_produto.as_view(),name="cadastrar_poduto"),
