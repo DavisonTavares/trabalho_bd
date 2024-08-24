@@ -6,6 +6,23 @@ from django.views.generic import ListView,CreateView,UpdateView,DeleteView
 from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
+def limpar_cpf(cpf):
+    """Remove caracteres não numéricos do CPF."""
+    return ''.join(filter(str.isdigit, cpf))
+
+def limpar_cep(cep):
+    """Remove caracteres não numéricos do CEP."""
+    return ''.join(filter(str.isdigit, cep))
+
+def limpar_telefone(telefone):
+    """Remove caracteres não numéricos do telefone."""
+    return ''.join(filter(str.isdigit, telefone))
+def formatar_cpf(cpf):
+        return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+def formatar_cep(cep):
+        return f"{cep[:5]}-{cep[5:]}"
+def formatar_telefone(telefone):
+        return f"({telefone[:2]}) {telefone[2:7]}-{telefone[7:]}"
 
 class cadastrar_cliente(CreateView):
     def get(self, request, *args, **kwargs):
@@ -20,10 +37,18 @@ class cadastrar_cliente(CreateView):
         for campo in campos_cliente:
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
+
             valor = request.POST.get(campo)
+            if campo == 'cpf':
+                valor = limpar_cpf(valor)
+            if campo == 'telefone':
+                valor = limpar_telefone(valor)
+
             dados_cliente.append(valor)
         for campo in campos_endereco:
             valor = request.POST.get(campo)
+            if campo == 'cep':
+                valor = limpar_cep(valor)
             dados_endereco.append(valor)
         try:
             dados_endereco = dict(zip(campos_endereco, dados_endereco))
@@ -53,6 +78,8 @@ class editar_cliente(UpdateView):
         campos_cliente = {}
         campos_endereco = {}
         # Atualiza campos do cliente
+        if dados['cpf'] != cliente.cpf:
+            campos_cliente['cpf'] = dados['cpf']
         if dados['nome'] != cliente.nome:
             campos_cliente['nome'] = dados['nome']
         if dados['telefone'] != cliente.telefone:
@@ -79,31 +106,36 @@ class editar_cliente(UpdateView):
         cliente = Cliente.objects.get(id=id)
         endereco = cliente.endereco
         # Inicializa o formulário com dados existentes
-        form = ClienteForm(initial={
+        cpf = formatar_cpf(cliente.cpf)
+        cep = formatar_cep(endereco.cep)
+        telefone = formatar_telefone(cliente.telefone)
+        cliente = {
+            'id': id,
             'nome': cliente.nome,
-            'cpf': cliente.cpf,
-            'telefone': cliente.telefone,
+            'cpf': cpf,
+            'telefone': telefone,
             'rua': endereco.rua,
             'numero': endereco.numero,
             'complemento': endereco.complemento,
             'bairro': endereco.bairro,
             'cidade': endereco.cidade,
             'estado': endereco.estado,
-            'cep': endereco.cep
-        })
-        return render(request, self.template_name, {'form': form})
+            'cep': cep
+        }
+        return render(request, self.template_name, {'cliente': cliente})
     def post(self, request, *args, **kwargs):
         try:        
+            id = kwargs.get('pk', None)
             nome = request.POST.get('nome')
-            cpf = request.POST.get('cpf')
-            telefone = request.POST.get('telefone')
+            cpf = limpar_cpf(request.POST.get('cpf'))
+            telefone = limpar_telefone(request.POST.get('telefone'))
             rua = request.POST.get('rua')
             numero = request.POST.get('numero')
             complemento = request.POST.get('complemento')
             bairro = request.POST.get('bairro')
             cidade = request.POST.get('cidade')
             estado = request.POST.get('estado')
-            cep = request.POST.get('cep')
+            cep = limpar_cep(request.POST.get('cep'))
             dados = {
             'nome': nome,
             'cpf': cpf,
@@ -116,11 +148,10 @@ class editar_cliente(UpdateView):
             'estado': estado,
             'cep': cep
             }
-            cliente = Cliente.objects.get(cpf=cpf)
+            cliente = Cliente.objects.get(id=id)
             endereco = cliente.endereco
             campos_cliente, campos_endereco = self.campos_alterados(cliente,endereco,dados)
-
-            Cliente.objects.filter(cpf=cpf).update(**campos_cliente)
+            Cliente.objects.filter(id=id).update(**campos_cliente)
             Endereco.objects.filter(id=endereco.id).update(**campos_endereco)
         except IntegrityError:
             # Lida com erros relacionados à integridade dos dados

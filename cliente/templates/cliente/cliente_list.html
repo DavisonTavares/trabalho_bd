@@ -1,29 +1,96 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>lista clientes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Remove espaçamento entre bordas */
+        }
+        th, td {
+            border: 1px solid #ddd; /* Adiciona borda às células */
+            padding: 8px; /* Adiciona espaçamento interno */
+            text-align: left; /* Alinha o texto à esquerda */
+        }
+        th {
+            background-color: #f2f2f2; /* Cor de fundo para cabeçalhos */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Cor de fundo alternada para linhas */
+        }
+    </style>
 </head>
 <body>
-    <h1>LISTA DE CLIENTES</h1>
-    <ul>
-    {% for client in cliente_list %}
-        <li>{{ client.nome }} - {{ client.cpf }} - {{ client.telefone }} - {{ client.endereco }}
-            <form action="{% url 'editar_cliente' client.id %}" method="get" style="display:inline;">
-                <button type="submit">Editar</button>
-            </form>
-            <!-- Formulário para exclusão -->
-            <form action="{% url 'deletar_cliente' client.id %}" method="get" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Excluir</button>
-            </form>
-        </li>
-    {% endfor %}
-    </ul>
+    <header
+    style="background-color: cadetblue; height: 10vh; display: flex; justify-content: center; align-items: center;"
+    >
+        <div  style="text-align: center; background-color: cadetblue">
+            <h1
+            style="color: white; font-size: 2em; font-weight: bold;"
+            >lista de Clientes</h1>
+        </div>
+    </header>
+    <main
+    style="display: flex; justify-content: center; align-items: center; height: 90vh;"
+    >
+    <section
+        style="max-height: 80vh; width: 80vw; background-color: #f5f5f5; padding: 20px; border-radius: 10px; flex-direction: column;"
+        >
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Endereço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in cliente_list %}
+                    <tr>
+                        <td >{{ cliente.nome }}</td>
+                        <td class="cpf"> {{ cliente.cpf }}</td>
+                        <td class="telefone"> {{ cliente.telefone }}</td>
+                        <td class="endereco"> {{ cliente.endereco }}</td>
+                        
+                        <td>
+                            <form action="{% url 'editar_cliente' cliente.id %}" method="get" class="custom-form">
+                                <button type="submit">Editar</button>
+                            </form>
+                            <form action="{% url 'deletar_cliente' cliente.id %}" method="get" class="custom-form">
+                                {% csrf_token %}
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <div class="container">
     <form action="/cadastrar_cliente" method="get">
-        <button type="submit">cadastrar cliente</button>
-    
+        <button type="submit" style="width: 100%;">cadastrar cliente</button>
+    </div>    
+    </section>
+    </main>
+    <script src="{% static 'js\formatacao.js' %}"></script>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.cpf').forEach(el => {
+                el.textContent = formatarCpf(el.textContent);
+            });
 
+            document.querySelectorAll('.telefone').forEach(el => {
+                el.textContent = formatarTelefone(el.textContent);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -9,9 +9,11 @@
     <h1>Cadastro de Cliente</h1>
     <form method="post">
         {% csrf_token %}
+        <div>
         {{form}}
         <form action="{% url 'cadastrar_cliente'%}" method="post" style="display:inline;">
             <button type="submit">Cadastrar</button>
+        </div>
         </form>
     </form>
 
