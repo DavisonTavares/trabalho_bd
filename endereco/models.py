@@ -1,6 +1,7 @@
 from django.db import models
 
 class Endereco(models.Model):
+    id = models.AutoField(primary_key=True)
     rua = models.CharField(max_length=255)
     numero = models.CharField(max_length=10)
     complemento = models.CharField(max_length=255, blank=True, null=True)

@@ -9,6 +9,7 @@
     <p>comfimar a remoção do <strong>{{cliente.nome}}</strong>? </p>
     <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="id" value="{{ cliente.id }}">
         <button type="submit">Apagar</button>
         <a href="{% url "listar_cliente" %}" type="submit">Cancelar</button>
     </form>
