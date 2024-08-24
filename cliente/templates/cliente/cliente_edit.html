@@ -10,7 +10,12 @@
     <form method="post">
         {% csrf_token %}
         {{form}}
-        <input type="submit" value="editar">
+        
+        <input type="submit" value="Editar">
+        </form>
+        <form action="{% url 'listar_cliente'%}" method="get" style="display:inline;">
+            <button type="submit">Voltar</button>
+        </form>
     </form>
 
     

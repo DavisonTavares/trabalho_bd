@@ -10,7 +10,9 @@
     <form method="post">
         {% csrf_token %}
         {{form}}
-        <input type="submit" value="Cadastrar">
+        <form action="{% url 'cadastrar_cliente'%}" method="post" style="display:inline;">
+            <button type="submit">Cadastrar</button>
+        </form>
     </form>
 
     

@@ -9,7 +9,16 @@
     <h1>LISTA DE CLIENTES</h1>
     <ul>
     {% for client in cliente_list %}
-        <li>{{ client.nome }} - {{ client.cpf }} - {{ client.telefone }} - {{ client.endereco }}</li>
+        <li>{{ client.nome }} - {{ client.cpf }} - {{ client.telefone }} - {{ client.endereco }}
+            <form action="{% url 'editar_cliente' client.id %}" method="get" style="display:inline;">
+                <button type="submit">Editar</button>
+            </form>
+            <!-- Formulário para exclusão -->
+            <form action="{% url 'deletar_cliente' client.id %}" method="get" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Excluir</button>
+            </form>
+        </li>
     {% endfor %}
     </ul>
     <form action="/cadastrar_cliente" method="get">
