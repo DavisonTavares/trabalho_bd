@@ -39,3 +39,79 @@
     color: white;
     cursor: pointer;
 }
+
+.product-card {
+    width: 12vw;
+    height: 35vh;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suave transição */
+}
+
+.product-card:hover {
+    transform: scale(1.05); /* Zoom de 5% ao passar o mouse */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Aumenta a sombra durante o zoom */
+}
+
+.product-card {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden; /* Garante que o conteúdo não extrapole o contêiner */
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: 150px; /* Ajuste conforme necessário */
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem cubra o contêiner */
+}
+
+.product-volume-overlay {
+    position: absolute;
+    top: 125px; /* Ajuste a posição conforme necessário */
+    right: -5px; /* Ajuste a posição conforme necessário */
+    background-color: cadetblue;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    font-size: 0.8em; /* Ajuste o tamanho da fonte conforme necessário */
+    z-index: 10; /* Garante que o overlay fique acima da imagem */
+    width: 5vw;
+    height: 3vh;
+}
+
+.product-info {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.product-name {
+    font-size: 1.2em; /* Ajuste conforme necessário */
+    margin: 0;
+}
+
+.product-price {
+    font-size: 1.5em; /* Ajuste conforme necessário */
+    margin: 0;
+    font-weight: bold ;    
+}
+
+.product-volume {
+    font-size: 1em; /* Ajuste conforme necessário */
+    margin: 0;
+    color: #ffffff;
+    font-weight: bold;
+}
