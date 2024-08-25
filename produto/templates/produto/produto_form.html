@@ -10,15 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/forms.css' %}">
 </head>
 <body>
-    <header
-    style="background-color: cadetblue; height: 10vh; display: flex; justify-content: center; align-items: center;"
-    >
-        <div  style="text-align: center; background-color: cadetblue">
-            <h1
-            style="color: white; font-size: 2em; font-weight: bold;"
-            >Cadastro de Produto</h1>
-        </div>
-    </header>
+    {% include 'sidebar.html' with title_page='CADASTRAR PRODUTO' %}
 
     <main
     style="display: flex; justify-content: center; align-items: center; height: 90vh;"
@@ -32,8 +24,23 @@
             <form method="POST" class="custom-form style=max-height: 80vh;">
                 {% csrf_token %}
                 {{ form }}
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
+                <button type="submit" class="btn btn-primary">{{titlebutton}}</button>
             </form>
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Erro ao cadastrar produto!</h4>
+                    <p>Verifique os campos obrigatórios e tente novamente.</p>
+                </div>
+            {% endif %}
+
+            {% if titlebutton == 'Editar' %}
+                <form action="{% url 'deletar_produto' produto_id %}" method="post" class="custom-form">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: rgb(224, 37, 12);">Apagar</button>
+                </form>
+            {% endif %}
+                        
+
         </section>
     </main>
 </body>
