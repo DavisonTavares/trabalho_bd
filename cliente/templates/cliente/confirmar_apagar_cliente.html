@@ -31,7 +31,6 @@
     <script>
         function confirmDelete() {
             if (confirm("Tem certeza que deseja excluir este cliente?")) {
-                // Cria uma requisição DELETE usando JavaScript
                 const form = document.getElementById('delete-form');
                 const url = form.action;
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;

@@ -25,8 +25,27 @@ def formatar_telefone(telefone):
         return f"({telefone[:2]}) {telefone[2:7]}-{telefone[7:]}"
 
 class cadastrar_cliente(CreateView):
+    template_name = 'cliente\cliente_form.html'
+    def cliente_return(self,id, cliente, endereco):
+        cpf = formatar_cpf(cliente["cpf"])
+        cep = formatar_cep(endereco["cep"])
+        telefone = formatar_telefone(cliente["telefone"])
+        cliente = {
+            'id': id,
+            'nome': cliente["nome"], 
+            'cpf': cpf,
+            'telefone': telefone,
+            'rua': endereco["rua"],
+            'numero': endereco["numero"],
+            'complemento': endereco["complemento"],
+            'bairro': endereco["bairro"],
+            'cidade': endereco["cidade"],
+            'estado': endereco["estado"],
+            'cep': cep
+        }
+        return cliente
     def get(self, request, *args, **kwargs):
-        return render(request,'cliente\cadastrar_cliente.html')
+        return render(request,self.template_name,{'cliente':False} )
     def post(self, request, *args, **kwargs):   
         campos_cliente = ['nome', 'cpf', 'telefone','endereco']
         campos_endereco =['rua', 'numero', 'complemento', 'bairro', 'cidade', 'estado', 'cep']
@@ -56,16 +75,16 @@ class cadastrar_cliente(CreateView):
             dados_cliente.append(endereco)
             dados_cliente = dict(zip(campos_cliente, dados_cliente))
             Cliente.objects.create(**dados_cliente)
+
         except IntegrityError:
-            # Lida com erros relacionados à integridade dos dados
-            return HttpResponse("Erro de integridade: Dados inválidos ou violação de chave única.", status=400)
+            cliente = self.cliente_return(0,dados_cliente,dados_endereco)
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro de integridade: Dados inválidos ou cpf já cadastrado."})
         except OperationalError:
-            # Lida com erros operacionais
-            return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
+            cliente = self.cliente_return(0,dados_cliente,dados_endereco)
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro operacional: Problema com o banco de dados."})
         except Exception as e:
-            # Lida com qualquer outro erro inesperado
-            return HttpResponse(f"Erro inesperado: {e}", status=500)
-        return redirect(reverse_lazy("lista_clientes"))
+            cliente = self.cliente_return(0,dados_cliente,dados_endereco)
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro inesperado: {e}"})
 
 class listar_cliente(ListView):
     model = Cliente
@@ -73,7 +92,7 @@ class listar_cliente(ListView):
 class editar_cliente(UpdateView):
     model = Cliente
     form_class = ClienteForm
-    template_name = 'cliente\cliente_edit.html'
+    template_name = 'cliente\cliente_form.html'
     def campos_alterados(self,cliente,endereco,dados):
         campos_cliente = {}
         campos_endereco = {}
@@ -100,12 +119,7 @@ class editar_cliente(UpdateView):
         if dados['cep'] != endereco.cep:
             campos_endereco['cep'] = dados['cep']
         return campos_cliente, campos_endereco
-    def get(self, request, *args, **kwargs):
-        # Recupera o cliente usando um identificador (exemplo: 'pk' ou 'cpf')
-        id = kwargs.get('pk', None)
-        cliente = Cliente.objects.get(id=id)
-        endereco = cliente.endereco
-        # Inicializa o formulário com dados existentes
+    def cliente_return(self,id,cliente,endereco):
         cpf = formatar_cpf(cliente.cpf)
         cep = formatar_cep(endereco.cep)
         telefone = formatar_telefone(cliente.telefone)
@@ -122,6 +136,14 @@ class editar_cliente(UpdateView):
             'estado': endereco.estado,
             'cep': cep
         }
+        return cliente
+    def get(self, request, *args, **kwargs):
+        # Recupera o cliente usando um identificador (exemplo: 'pk' ou 'cpf')
+        id = kwargs.get('pk', None)
+        cliente = Cliente.objects.get(id=id)
+        endereco = cliente.endereco
+        # Inicializa o formulário com dados existentes
+        cliente = self.cliente_return(id,cliente,endereco)
         return render(request, self.template_name, {'cliente': cliente})
     def post(self, request, *args, **kwargs):
         try:        
@@ -155,10 +177,13 @@ class editar_cliente(UpdateView):
             Endereco.objects.filter(id=endereco.id).update(**campos_endereco)
         except IntegrityError:
             # Renderiza o template com uma mensagem de erro
+            cliente = self.cliente_return(id,cliente,endereco)
             return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro de integridade: Dados inválidos ou violação de chave única."})
         except OperationalError:
+            cliente = self.cliente_return(id,cliente,endereco)
             return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro operacional: Problema com o banco de dados."})
         except Exception as e:
+            cliente = self.cliente_return(id,cliente,endereco)
             return render(request, self.template_name, {'cliente': cliente, 'erro': f"Erro inesperado: {e}"})
 
         return redirect(reverse_lazy("lista_clientes"))
