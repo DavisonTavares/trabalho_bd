@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
 from fpdf import FPDF
+from django.views.generic.edit import UpdateView
+
 def limpar_cpf(cpf):
     return ''.join(filter(str.isdigit, cpf))
 

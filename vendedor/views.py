@@ -40,29 +40,52 @@ class editar_vendedor(UpdateView):
     template_name = 'vendedor/vendedor_form.html'
     success_url = reverse_lazy('listar_vendedor')
 
+    def campos_alterados(self, vendedor, dados):
+        campos_vendedor = {}
+        if dados['nome'] != vendedor.nome:
+            campos_vendedor['nome'] = dados['nome']
+        return campos_vendedor
+
+    def vendedor_return(self, id, vendedor):
+        return {
+            'id': id,
+            'nome': vendedor.nome,
+        }
+
     def get(self, request, *args, **kwargs):
         id = kwargs.get('pk', None)
-        vendedor = Vendedor.objects.get(id=id)
-        form = self.form_class(instance=vendedor)
-        return render(request, self.template_name, {'form': form})
+        try:
+            vendedor = Vendedor.objects.get(id=id)
+            vendedor = self.vendedor_return(id, vendedor)
+        except Vendedor.DoesNotExist:
+            return HttpResponseNotFound('Vendedor não encontrado.')
+        except OperationalError:
+            return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
+        except Exception as e:
+            return HttpResponse(f"Erro inesperado: {e}", status=500)
+        return render(request, self.template_name, {'vendedor': vendedor})
 
     def post(self, request, *args, **kwargs):
         id = kwargs.get('pk', None)
-        vendedor = Vendedor.objects.get(id=id)
-        form = self.form_class(request.POST, instance=vendedor)
-        if form.is_valid():
-            try:
-                form.save()
-                return redirect(self.success_url)
-            except IntegrityError:
-                return render(request, self.template_name, {'form': form, 'erro': "Erro de integridade: Dados inválidos."})
-            except OperationalError:
-                return render(request, self.template_name, {'form': form, 'erro': "Erro operacional: Problema com o banco de dados."})
-            except Exception as e:
-                return render(request, self.template_name, {'form': form, 'erro': f"Erro inesperado: {e}"})
-        else:
-            return render(request, self.template_name, {'form': form})
+        nome = request.POST.get('nome')
+        dados = {'nome': nome}
 
+        try:
+            vendedor = Vendedor.objects.get(id=id)
+            campos_vendedor = self.campos_alterados(vendedor, dados)
+            Vendedor.objects.filter(id=id).update(**campos_vendedor)
+        except IntegrityError:
+            vendedor = self.vendedor_return(id, vendedor)
+            return render(request, self.template_name, {'vendedor': vendedor, 'erro': "Dados inválidos."})
+        except OperationalError:
+            vendedor = self.vendedor_return(id, vendedor)
+            return render(request, self.template_name, {'vendedor': vendedor, 'erro': "Problema com o banco de dados."})
+        except Exception as e:
+            vendedor = self.vendedor_return(id, vendedor)
+            return render(request, self.template_name, {'vendedor': vendedor, 'erro': f"Erro inesperado: {e}"})
+
+        return redirect(self.success_url)
+    
 class deletar_vendedor(DeleteView):
     model = Vendedor
     template_name = 'vendedor/confirmar_apagar_vendedor.html'
