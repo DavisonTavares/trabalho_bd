@@ -7,12 +7,16 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="display: flex; flex-direction: row; gap: 20px; margin-right: 20px;">
-                  
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="display: flex; flex-direction: row; gap: 20px; margin-right: 20px;">                  
                 {% url 'lista_produtos' as lista_produtos_url %}
                 {% if request.path != lista_produtos_url %}
                     <li class="nav-item">
                         <a href="{{ lista_produtos_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Produto</a>
+                    </li>
+                {% endif %}
+                {% if request.path == lista_produtos_url %}
+                    <li class="nav-item">
+                        <a href="{% url 'gerar_relatorio' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Gerar Relatorio</a>
                     </li>
                 {% endif %}
                 {% url 'cadastrar_produto' as cadastrar_produto_url %}
