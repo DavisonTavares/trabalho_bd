@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
 from fpdf import FPDF
+import unicodedata
 def limpar_cpf(cpf):
     return ''.join(filter(str.isdigit, cpf))
 
@@ -52,14 +53,16 @@ class cadastrar_cliente(CreateView):
         dados_endereco = []
         # Coleta os dados usando request.POST.get para cada campo
         for campo in campos_cliente:
+            valor = request.POST.get(campo)
+            if campo == 'nome':
+                nomeFormatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII')
+                nomeFormatado = nomeFormatado.lower()
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
-            valor = request.POST.get(campo)
             if campo == 'cpf':
                 valor = limpar_cpf(valor)
             if campo == 'telefone':
                 valor = limpar_telefone(valor)
-
             dados_cliente.append(valor)
         for campo in campos_endereco:
             valor = request.POST.get(campo)
@@ -70,6 +73,8 @@ class cadastrar_cliente(CreateView):
             dados_endereco = dict(zip(campos_endereco, dados_endereco))
             endereco = Endereco.objects.create(**dados_endereco)
             dados_cliente.append(endereco)
+            dados_cliente.append(nomeFormatado)
+            campos_cliente.append('nome_formatado')
             dados_cliente = dict(zip(campos_cliente, dados_cliente))
             Cliente.objects.create(**dados_cliente)
         except IntegrityError:
@@ -84,8 +89,16 @@ class cadastrar_cliente(CreateView):
         return redirect(reverse_lazy("lista_clientes"))
 class listar_cliente(ListView):
     model = Cliente
-
-
+    def post(self, request, *args, **kwargs):  
+        search_term = request.POST.get('search')
+        if search_term:
+            # Retirar acentos e caracteres especiais da string
+            search_term_normalized = unicodedata.normalize('NFKD', search_term)
+            search_term_normalized = search_term_normalized.encode('ASCII', 'ignore').decode('ASCII')
+            search_term_normalized = search_term_normalized.lower()
+            # Filtrar produtos que contenham o termo de pesquisa, sem considerar acentos
+            clientes = Cliente.objects.filter(nome_formatado=search_term_normalized)
+        return render(request, 'produto/produto_list.html', {'clientes': clientes})
 class editar_cliente(UpdateView):
     model = Cliente
     form_class = ClienteForm
