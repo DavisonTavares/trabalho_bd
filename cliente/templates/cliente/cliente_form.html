@@ -6,21 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <header
-    style="background-color: cadetblue; height: 10vh; display: flex; justify-content: center; align-items: center;"
-    >
-        <div  style="text-align: center; background-color: cadetblue; display: flex; flex-direction: row">
-            <h1
-            style="color: white; font-size: 2em; font-weight: bold;"
-            >CLIENTE</h1>
-            <div style="margin-left: 20px; right: 0; position: absolute; display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-right: 20px; gap: 20px;">
-                <a href="{% url 'cadastrar_produto' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Produto</a>
-                <a href="{% url 'cadastrar_cliente' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Cliente</a>
-                <a href="{% url 'lista_clientes' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Clientes</a>
-                <a href="{% url 'lista_produtos' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Produtos</a>
-            </div>
-        </div>
-    </header>
+    {% include 'sidebar.html' with title_page='CADASTRAR CLIENTE' %}
     <h1>Cadastro de Cliente</h1>
     <form method="post">
         {% csrf_token %}

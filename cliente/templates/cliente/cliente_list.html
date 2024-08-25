@@ -27,35 +27,21 @@
     </style>
 </head>
 <body>
-    <header
-    style="background-color: cadetblue; height: 10vh; display: flex; justify-content: center; align-items: center;"
-    >
-        <div  style="text-align: center; background-color: cadetblue; display: flex; flex-direction: row">
-            <h1
-            style="color: white; font-size: 2em; font-weight: bold;"
-            >CLIENTE</h1>
-            <div style="margin-left: 20px; right: 0; position: absolute; display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-right: 20px; gap: 20px;">
-                <a href="{% url 'cadastrar_produto' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Produto</a>
-                <a href="{% url 'cadastrar_cliente' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Cliente</a>
-                <a href="{% url 'lista_clientes' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Clientes</a>
-                <a href="{% url 'lista_produtos' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Produtos</a>
-            </div>
-        </div>
-    </header>
+    {% include 'sidebar.html' with title_page='LISTA CLIENTES' %}
     <main
     style="display: flex; justify-content: center; align-items: center; height: 90vh;"
     >
     <section
         style="max-height: 80vh; width: 80vw; background-color: #f5f5f5; padding: 20px; border-radius: 10px; flex-direction: column;"
         >
-        <table>
+        <table id="clientesTabela">
             <thead>
                 <tr>
                     <th>Nome</th>
                     <th>CPF</th>
                     <th>Telefone</th>
                     <th>Endereço</th>
-                    <th>Ações</th>
+                    <th >Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,21 +53,28 @@
                         <td class="endereco"> {{ cliente.endereco }}</td>
                         
                         <td>
-                            <form action="{% url 'editar_cliente' cliente.id %}" method="get" class="custom-form">
+                            <form  action="{% url 'editar_cliente' cliente.id %}" method="get" class="custom-form">
                                 <button type="submit">Editar</button>
                             </form>
-                            <form action="{% url 'deletar_cliente' cliente.id %}" method="get" class="custom-form">
+                            <form  action="{% url 'deletar_cliente' cliente.id %}" method="get" class="custom-form">
                                 {% csrf_token %}
                                 <button type="submit" style="background-color: rgb(224, 37, 12);">Excluir</button>
                             </form>
                         </td>
                     </tr>
                 {% endfor %}
+                <tr>
+                    <th>Total de clientes = {{ cliente_list|length }}</th> 
+                </tr>
             </tbody>
         </table>
     <div class="container">
-    <form action="/cadastrar_cliente" method="get">
+    <form action="/cadastrar_cliente" method="get" class="custom-form">
         <button type="submit" style="width: 100%;">cadastrar cliente</button>
+    </form>
+    
+        <button id="gerarPDF" type="submit" style="width: 100%;">Gerar relatório</button>
+    
     </div>    
     </section>
     </main>
@@ -91,12 +84,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.cpf').forEach(el => {
                 el.textContent = formatarCpf(el.textContent);
-            });
+            })
 
             document.querySelectorAll('.telefone').forEach(el => {
-                el.textContent = formatarTelefone(el.textContent);
-            });
-        });
+                el.textContent = formatarTelefone(el.textContent)
+            })
+        })
+        
     </script>
 </body>
 </html>
