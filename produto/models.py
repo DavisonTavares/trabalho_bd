@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from django.utils import timezone
 class Produto(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nome = models.CharField(max_length=255)
@@ -16,7 +17,7 @@ class Produto(models.Model):
         return f"{self.nome} (Marca: {self.marca}, Litragem: {self.litragem}L, Quantidade: {self.quantidade}, Valor:R$ {self.valor:.2f})"
 
 class Marca(models.Model):
-    id: models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=255)
 
     def __str__(self):

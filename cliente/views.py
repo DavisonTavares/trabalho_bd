@@ -54,7 +54,6 @@ class cadastrar_cliente(CreateView):
         for campo in campos_cliente:
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
-
             valor = request.POST.get(campo)
             if campo == 'cpf':
                 valor = limpar_cpf(valor)
@@ -73,7 +72,6 @@ class cadastrar_cliente(CreateView):
             dados_cliente.append(endereco)
             dados_cliente = dict(zip(campos_cliente, dados_cliente))
             Cliente.objects.create(**dados_cliente)
-
         except IntegrityError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
             return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado."})
@@ -196,7 +194,7 @@ class editar_cliente(UpdateView):
 class deletar_cliente(DeleteView):
     def get(self, request, *args, **kwargs):
         try:
-            id = kwargs.get('pk', None)
+            id = kwargs.get('cliente_id', None)
             cliente = Cliente.objects.get(id=id)
         except Cliente.DoesNotExist:
             return HttpResponseNotFound('Cliente não encontrado.')
@@ -211,7 +209,7 @@ class deletar_cliente(DeleteView):
     model = Cliente
     success_url = reverse_lazy("listar_cliente")
     def delete(self, request, *args, **kwargs):
-        id = kwargs.get('pk', None)
+        id = kwargs.get('cliente_id', None)
         if id is None:
             return HttpResponseNotFound('Cliente não encontrado.')
         try:
