@@ -13,11 +13,17 @@
     <header
     style="background-color: cadetblue; height: 10vh; display: flex; justify-content: center; align-items: center;"
     >
-    <div  style="text-align: center; background-color: cadetblue">
-        <h1
-        style="color: white; font-size: 2em; font-weight: bold;"
-        >Editar Produto</h1>
-    </div>
+        <div  style="text-align: center; background-color: cadetblue; display: flex; flex-direction: row">
+            <h1
+            style="color: white; font-size: 2em; font-weight: bold;"
+            >Produto</h1>
+            <div style="margin-left: 20px; right: 0; position: absolute; display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-right: 20px; gap: 20px;">
+                <a href="{% url 'cadastrar_produto' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Produto</a>
+                <a href="{% url 'cadastrar_cliente' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Cliente</a>
+                <a href="{% url 'lista_clientes' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Clientes</a>
+                <a href="{% url 'lista_produtos' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Produtos</a>
+            </div>
+        </div>
     </header>
     <main
     style="display: flex; justify-content: center; align-items: center; height: 90vh;"
@@ -25,15 +31,16 @@
     <section
         style="max-height: 80vh; width: 45vw; background-color: #f5f5f5; padding: 20px; border-radius: 10px; flex-direction: column;"
         >
-        <form action="{% url 'editar_cliente' cliente.id %}" method="POST" class="custom-form">
+        <h2>Editar produto </h2>
+        <form action="{% url 'editar_produto' produto.id %}" method="POST" class="custom-form">
         {% csrf_token %}
         {{ form }}
-        <button type="submit">Atualizar Cliente</button>
+        <button type="submit">editar produto</button>
     </form>
-        <form action="{% url 'lista_clientes'%}" method="get" class="custom-form">
+        <form action="{% url 'lista_produtos'%}" method="get" class="custom-form">
             <button type="submit">Voltar</button>
         </form>
-        <form action="{% url 'deletar_cliente' cliente.id %}" method="get" class="custom-form">
+        <form action="{% url 'deletar_produto' produto.id %}" method="get" class="custom-form">
             <button type="submit" style="background-color: rgb(224, 37, 12);">Apagar</button>
         </form>
     
