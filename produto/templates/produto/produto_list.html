@@ -11,9 +11,11 @@
 </head>
 <body>
     {% include 'sidebar.html' with title_page='PRODUTO' %}
-    <main
-    style="display: flex; flex-direction: row ;justify-content: center; align-items: center; height: 90vh; flex-wrap: wrap;">
-       {% for produto in produtos %}
+    <main>    
+        <button style="border-radius: 10px ;border: none; color: white;background: cadetblue; padding: 10px ;margin: 20px 0 20px 20px; right: 0; position: absolute; display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-right: 20px; gap: 20px;"
+        onClick="window.location.href='{% url 'gerar_relatorio' %}'">Gerar Relatório</button>           
+    <div style="display: flex; flex-direction: row ;justify-content: center; align-items: center; height: 90vh; flex-wrap: wrap;">     
+    {% for produto in produtos %}
        <div class="product-card"
      onClick="window.location.href='{% url 'editar_produto' produto.id %}'">
     <div class="product-image-container">
@@ -30,6 +32,7 @@
     </div>
 </div>
         {% endfor %} 
+    </div>
     </main>
     <script src="{% static 'js\formatacao.js' %}"></script>
     <script>
