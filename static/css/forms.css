@@ -42,7 +42,8 @@ button {
 
 .product-card {
     width: 12vw;
-    height: 35vh;
+
+    height: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
     overflow: hidden;

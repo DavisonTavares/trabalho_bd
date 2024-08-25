@@ -6,16 +6,14 @@ from django.views.generic import ListView,CreateView,UpdateView,DeleteView
 from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
+from fpdf import FPDF
 def limpar_cpf(cpf):
-    """Remove caracteres não numéricos do CPF."""
     return ''.join(filter(str.isdigit, cpf))
 
 def limpar_cep(cep):
-    """Remove caracteres não numéricos do CEP."""
     return ''.join(filter(str.isdigit, cep))
 
 def limpar_telefone(telefone):
-    """Remove caracteres não numéricos do telefone."""
     return ''.join(filter(str.isdigit, telefone))
 def formatar_cpf(cpf):
         return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
@@ -78,16 +76,17 @@ class cadastrar_cliente(CreateView):
 
         except IntegrityError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro de integridade: Dados inválidos ou cpf já cadastrado."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado."})
         except OperationalError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro operacional: Problema com o banco de dados."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Problema com o banco de dados."})
         except Exception as e:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
             return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro inesperado: {e}"})
-
+        return redirect(reverse_lazy("lista_clientes"))
 class listar_cliente(ListView):
     model = Cliente
+
 
 class editar_cliente(UpdateView):
     model = Cliente
@@ -138,16 +137,22 @@ class editar_cliente(UpdateView):
         }
         return cliente
     def get(self, request, *args, **kwargs):
-        # Recupera o cliente usando um identificador (exemplo: 'pk' ou 'cpf')
-        id = kwargs.get('pk', None)
-        cliente = Cliente.objects.get(id=id)
-        endereco = cliente.endereco
-        # Inicializa o formulário com dados existentes
-        cliente = self.cliente_return(id,cliente,endereco)
+        id = kwargs.get('cliente_id', None)
+        try:
+            cliente = Cliente.objects.get(id=id)
+            endereco = cliente.endereco
+            cliente = self.cliente_return(id,cliente,endereco)
+        except Cliente.DoesNotExist:
+            return HttpResponseNotFound('Cliente não encontrado.')
+        except OperationalError:
+            
+            return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
+        except Exception as e:
+            return HttpResponse(f"Erro inesperado: {e}", status=500) 
         return render(request, self.template_name, {'cliente': cliente})
     def post(self, request, *args, **kwargs):
         try:        
-            id = kwargs.get('pk', None)
+            id = kwargs.get('cliente_id', None)
             nome = request.POST.get('nome')
             cpf = limpar_cpf(request.POST.get('cpf'))
             telefone = limpar_telefone(request.POST.get('telefone'))
@@ -178,10 +183,10 @@ class editar_cliente(UpdateView):
         except IntegrityError:
             # Renderiza o template com uma mensagem de erro
             cliente = self.cliente_return(id,cliente,endereco)
-            return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro de integridade: Dados inválidos ou violação de chave única."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado."})
         except OperationalError:
             cliente = self.cliente_return(id,cliente,endereco)
-            return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro operacional: Problema com o banco de dados."})
+            return render(request, self.template_name, {'cliente': cliente, 'erro': "Problema com o banco de dados."})
         except Exception as e:
             cliente = self.cliente_return(id,cliente,endereco)
             return render(request, self.template_name, {'cliente': cliente, 'erro': f"Erro inesperado: {e}"})
@@ -219,3 +224,56 @@ class deletar_cliente(DeleteView):
             return HttpResponseNotFound('Cliente não encontrado.')
         except Exception as e:
             return JsonResponse({'message': 'Erro ao excluir cliente.', 'error': str(e)}, status=500)
+def gerar_relatorio_cliente(request):
+    clientes = Cliente.objects.all()
+    
+    pdf = FPDF(orientation='L', unit='mm', format='A4')
+    pdf.add_page()
+    pdf.set_font("Arial", size=10, style='B')
+
+    # Definindo a cor de fundo do cabeçalho da tabela
+    pdf.set_fill_color(95, 158, 160)
+    pdf.set_text_color(255, 255, 255)  # Cor do texto (branco)
+    pdf.set_draw_color(95, 158, 160)  # Cor das linhas (preto)
+    
+     # Definindo a largura da célula (em mm) e a altura da célula
+    largura_cabecalho = 280  # Largura da célula em milímetros
+    altura_cabecalho = 10     # Altura da célula em milímetros
+    
+    pdf.multi_cell(largura_cabecalho, altura_cabecalho, "Relatório de clientes", 0, 'C', 1)
+    pdf.ln(10)
+    # Definindo a largura das colunas
+    largura_coluna_nome = 60
+    largura_coluna_cpf = 30
+    largura_coluna_telefone = 30
+    largura_coluna_endereço = 160
+    altura_linha = 10
+
+    # Cabeçalhos da tabela
+    pdf.cell(largura_coluna_nome, altura_linha, 'Nome', 1, 0, 'C', 1)
+    pdf.cell(largura_coluna_cpf, altura_linha, 'cpf', 1, 0, 'C', 1)
+    pdf.cell(largura_coluna_telefone, altura_linha, 'telefone', 1, 0, 'C', 1)
+    pdf.cell(largura_coluna_endereço, altura_linha, 'endereço', 1, 1, 'C', 1)
+
+    pdf.set_text_color(0, 0, 0)  # Resetar cor do texto para preto
+    pdf.set_font("Arial", size=10, style='')
+    # Linhas da tabela
+    for cliente in clientes:
+        pdf.cell(largura_coluna_nome, altura_linha, cliente.nome, 1)
+        pdf.cell(largura_coluna_cpf, altura_linha, formatar_cpf(cliente.cpf), 1, 0, 'C')
+        pdf.cell(largura_coluna_telefone, altura_linha, formatar_telefone(cliente.telefone), 1, 0, 'C')
+        pdf.cell(largura_coluna_endereço, altura_linha, str(cliente.endereco), 1, 1, 'C')
+
+    pdf.ln(10)
+    totalDeclientes = clientes.count()                
+    pdf.cell(largura_cabecalho, altura_linha, f"Total de clientes: {totalDeclientes}",0, 1,'R')
+    pdf.set_text_color(0, 0, 0)   
+    # Criando a resposta HTTP com o PDF gerado
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="relatorio_clientes.pdf"'
+    
+    # Salvando o PDF na resposta HTTP
+    pdf.output(dest='S').encode('latin1')
+    response.write(pdf.output(dest='S').encode('latin1'))
+    
+    return response

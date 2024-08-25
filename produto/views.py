@@ -9,7 +9,8 @@ from django.urls import reverse_lazy
 from .models import Produto
 from .forms import ProdutoForm
 from django.db.models import Count
-from fpdf import FPDF
+import unicodedata
+
 
 def deletar_produto(request, produto_id):
     if request.method == 'POST':    
@@ -24,8 +25,11 @@ def editar_produto(request, produto_id):
         form = ProdutoForm(request.POST, instance=produto)
         if form.is_valid():
             url_imagem = form.cleaned_data['url_imagem'] or 'https://i.pinimg.com/736x/a2/2e/55/a22e5584986d9c09b02a382805802469.jpg'
+            nomeFormatado = unicodedata.normalize('NFKD', form.cleaned_data['nome']).encode('ASCII', 'ignore').decode('ASCII')
+            nomeFormatado = nomeFormatado.lower()
             Produto.objects.filter(id=produto_id).update(
                 nome=form.cleaned_data['nome'],
+                nomeFormatado=nomeFormatado,
                 quantidade=form.cleaned_data['quantidade'],
                 valor=form.cleaned_data['valor'],
                 marca=form.cleaned_data['marca'],
@@ -33,8 +37,8 @@ def editar_produto(request, produto_id):
                 url_imagem=url_imagem
             )
             return redirect(reverse_lazy('lista_produtos'))
-    else:
-        form = ProdutoForm(instance=produto)
+        else:
+            form = ProdutoForm(instance=produto)
     
     return render(request, 'produto/produto_form.html', {'form': form, 'titlebutton': 'Editar', 'produto_id': produto_id})
 
@@ -46,9 +50,12 @@ def cadastrar_produto(request):
             return render(request, 'produto/produto_form.html', {'form': form})
 
         url_imagem = form.cleaned_data['url_imagem'] or 'https://i.pinimg.com/736x/a2/2e/55/a22e5584986d9c09b02a382805802469.jpg'        
+        nomeFormatado = unicodedata.normalize('NFKD', form.cleaned_data['nome']).encode('ASCII', 'ignore').decode('ASCII')
+        nomeFormatado = nomeFormatado.lower()
       # Criando o objeto Produto e salvando no banco de dados
         Produto.objects.create(
             nome=form.cleaned_data['nome'],
+            nomeFormatado=nomeFormatado,
             quantidade=form.cleaned_data['quantidade'],
             valor=form.cleaned_data['valor'],
             marca=form.cleaned_data['marca'],
@@ -63,8 +70,22 @@ def cadastrar_produto(request):
     return render(request, 'produto/produto_form.html', {'form': ProdutoForm(), 'titlebutton': 'Cadastrar'})
 
 def listar_produto(request):
-    produtos = Produto.objects.all()
-    return render(request, 'produto/produto_list.html', {'produtos': produtos})
+    if request.method == 'POST':
+        search_term = request.POST.get('search')
+        
+        if search_term:
+            # Retirar acentos e caracteres especiais da string
+            search_term_normalized = unicodedata.normalize('NFKD', search_term)
+            search_term_normalized = search_term_normalized.encode('ASCII', 'ignore').decode('ASCII')
+            search_term_normalized = search_term_normalized.lower()
+            # Filtrar produtos que contenham o termo de pesquisa, sem considerar acentos
+            produtos = Produto.objects.filter(nomeFormatado__contains=search_term_normalized)
+            produtos = Produto.objects.all()
+    else:
+        produtos = Produto.objects.all()
+
+    return render(request, 'produto/produto_list.html', {'produtos': produtos})    
+
 
 def gerar_relatorio(request):
     produtos = Produto.objects.all()
