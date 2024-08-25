@@ -18,6 +18,9 @@
         style="max-height: 80vh; width: 45vw; background-color: #f5f5f5; padding: 20px; border-radius: 10px; flex-direction: column;"
         >
         <h2>Editar cliente</h2>
+        {% if erro %}
+        <div class="alert alert-danger">{{ erro }}</div>
+        {% endif %}
         <form action="{% url 'editar_cliente' cliente.id %}" method="POST" class="custom-form">
         {% csrf_token %}
         <!-- Nome -->
@@ -89,8 +92,7 @@
         <form action="{% url 'deletar_cliente' cliente.id %}" method="get" class="custom-form">
             <button type="submit" style="background-color: rgb(224, 37, 12);">Apagar</button>
         </form>
-    
-    
+   
 </section>
 </main>
 </body>

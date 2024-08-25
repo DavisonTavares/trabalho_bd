@@ -154,15 +154,13 @@ class editar_cliente(UpdateView):
             Cliente.objects.filter(id=id).update(**campos_cliente)
             Endereco.objects.filter(id=endereco.id).update(**campos_endereco)
         except IntegrityError:
-            # Lida com erros relacionados à integridade dos dados
-            return HttpResponse("Erro de integridade: Dados inválidos ou violação de chave única.", status=400)
+            # Renderiza o template com uma mensagem de erro
+            return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro de integridade: Dados inválidos ou violação de chave única."})
         except OperationalError:
-            # Lida com erros operacionais
-            return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
+            return render(request, self.template_name, {'cliente': cliente, 'erro': "Erro operacional: Problema com o banco de dados."})
         except Exception as e:
-            # Lida com qualquer outro erro inesperado
-            return HttpResponse(f"Erro inesperado: {e}", status=500)
-        # redireciona caso operação bem sucedida
+            return render(request, self.template_name, {'cliente': cliente, 'erro': f"Erro inesperado: {e}"})
+
         return redirect(reverse_lazy("lista_clientes"))
     
 class deletar_cliente(DeleteView):
