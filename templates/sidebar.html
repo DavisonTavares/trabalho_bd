@@ -1,8 +1,6 @@
 <nav class="navbar navbar-expand-lg" style="background-color: cadetblue;">
     <div class="container-fluid">
-        <h1
-            style="color: white; font-size: 2em; font-weight: bold;"
-            >{{title_page}}</h1>
+        <h1 style="color: white; font-size: 2em; font-weight: bold;">{{ title_page }}</h1>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -21,20 +19,34 @@
                         <a href="{{ cadastrar_produto_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Produto</a>
                     </li>
                 {% endif %}
-                
+
                 {% url 'cadastrar_cliente' as cadastrar_cliente_url %}
                 {% if request.path != cadastrar_cliente_url %}
                     <li class="nav-item">
                         <a href="{{ cadastrar_cliente_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Cliente</a>
                     </li>
                 {% endif %}
-                
+
                 {% url 'lista_clientes' as lista_clientes_url %}
                 {% if request.path != lista_clientes_url %}
                     <li class="nav-item">
                         <a href="{{ lista_clientes_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Clientes</a>
                     </li>
                 {% endif %}
+
+                {% url 'listar_vendedor' as listar_vendedor_url %}
+                {% if request.path != listar_vendedor_url %}
+                    <li class="nav-item">
+                        <a href="{{ listar_vendedor_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Lista Vendedores</a>
+                    </li>
+                {% endif %}
+                {% url 'cadastrar_vendedor' as cadastrar_vendedor_url %}
+                {% if request.path != cadastrar_vendedor_url %}
+                    <li class="nav-item">
+                        <a href="{{ cadastrar_vendedor_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Cadastrar Vendedor</a>
+                    </li>
+                {% endif %}
+
             </ul>
         </div>
     </div>
