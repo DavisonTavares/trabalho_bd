@@ -8,7 +8,7 @@ from .models import Produto
 from .forms import ProdutoForm
 from django.db.models import Count
 import unicodedata
-
+from fpdf import FPDF
 
 def deletar_produto(request, produto_id):
     if request.method == 'POST':    
