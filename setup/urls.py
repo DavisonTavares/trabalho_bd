@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path
 from cliente.views import cadastrar_cliente,listar_cliente,editar_cliente,deletar_cliente,gerar_relatorio_cliente
-from produto.views import cadastrar_produto, editar_produto, listar_produto, deletar_produto, gerar_relatorio
+from produto.views import cadastrar_produto, editar_produto, listar_produto, deletar_produto, gerar_relatorio, cadastrar_marca
 from vendedor.views import cadastrar_vendedor, listar_vendedor, editar_vendedor, deletar_vendedor
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,6 +16,7 @@ urlpatterns = [
     path('editar_produto/<uuid:produto_id>/', editar_produto, name='editar_produto'),
     path('deletar_produto/<uuid:produto_id>/', deletar_produto, name='deletar_produto'),
     path('gerar_relatorio/', gerar_relatorio, name='gerar_relatorio'),
+    path('cadastrar_marca/', cadastrar_marca, name='cadastrar_marca'),
     path('lista_produtos/',listar_produto,name="lista_produtos"),
     path('vendedor/cadastrar/', cadastrar_vendedor.as_view(), name='cadastrar_vendedor'),
     path('vendedor/listar', listar_vendedor.as_view(), name='listar_vendedor'),

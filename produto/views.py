@@ -1,15 +1,18 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
-from .models import Produto
+from .models import Produto, Marca
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.db import IntegrityError
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from .models import Produto
 from .forms import ProdutoForm
 from django.db.models import Count
+from fpdf import FPDF
 import unicodedata
+
 
 
 def deletar_produto(request, produto_id):
@@ -24,6 +27,8 @@ def editar_produto(request, produto_id):
     if request.method == 'POST':
         form = ProdutoForm(request.POST, instance=produto)
         if form.is_valid():
+            marca = Marca.objects.get_or_create(nome=form.cleaned_data['marca'])
+     
             url_imagem = form.cleaned_data['url_imagem'] or 'https://i.pinimg.com/736x/a2/2e/55/a22e5584986d9c09b02a382805802469.jpg'
             nomeFormatado = unicodedata.normalize('NFKD', form.cleaned_data['nome']).encode('ASCII', 'ignore').decode('ASCII')
             nomeFormatado = nomeFormatado.lower()
@@ -37,10 +42,10 @@ def editar_produto(request, produto_id):
                 url_imagem=url_imagem
             )
             return redirect(reverse_lazy('lista_produtos'))
-        else:
-            form = ProdutoForm(instance=produto)
     
-    return render(request, 'produto/produto_form.html', {'form': form, 'titlebutton': 'Editar', 'produto_id': produto_id})
+    form = ProdutoForm(instance=produto)
+    marcas = Marca.objects.all()
+    return render(request, 'produto/produto_form.html', {'form': form, 'titlebutton': 'Editar', 'produto_id': produto_id, 'marcas': marcas})
 
     
 def cadastrar_produto(request):
@@ -48,6 +53,8 @@ def cadastrar_produto(request):
         form = ProdutoForm(request.POST)
         if not form.is_valid():
             return render(request, 'produto/produto_form.html', {'form': form})
+        marca = Marca.objects.get_or_create(nome=form.cleaned_data['marca'])
+        print(marca)        
 
         url_imagem = form.cleaned_data['url_imagem'] or 'https://i.pinimg.com/736x/a2/2e/55/a22e5584986d9c09b02a382805802469.jpg'        
         nomeFormatado = unicodedata.normalize('NFKD', form.cleaned_data['nome']).encode('ASCII', 'ignore').decode('ASCII')
@@ -67,12 +74,13 @@ def cadastrar_produto(request):
         return redirect(reverse_lazy('lista_produtos'))
     
     # Se o método for GET, renderize o formulário
-    return render(request, 'produto/produto_form.html', {'form': ProdutoForm(), 'titlebutton': 'Cadastrar'})
+    marcas = Marca.objects.all()
+    return render(request, 'produto/produto_form.html', {'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'marcas': marcas})
 
 def listar_produto(request):
     if request.method == 'POST':
         search_term = request.POST.get('search')
-        
+ 
         if search_term:
             # Retirar acentos e caracteres especiais da string
             search_term_normalized = unicodedata.normalize('NFKD', search_term)
@@ -80,12 +88,27 @@ def listar_produto(request):
             search_term_normalized = search_term_normalized.lower()
             # Filtrar produtos que contenham o termo de pesquisa, sem considerar acentos
             produtos = Produto.objects.filter(nomeFormatado__contains=search_term_normalized)
+        else:
             produtos = Produto.objects.all()
     else:
         produtos = Produto.objects.all()
 
     return render(request, 'produto/produto_list.html', {'produtos': produtos})    
 
+def cadastrar_marca(request):
+    print(request.method)
+    if request.method == 'POST':
+        try:
+            nome = request.POST.get('marca')
+            nome = nome.upper()
+            print(nome)
+            Marca.objects.create(nome=nome)
+            return redirect(reverse_lazy('cadastrar_produto'))
+        except IntegrityError:
+            return render(request, 'produto/produto_form.html', {'errors': 'Marca já cadastrada', 'form': ProdutoForm()})
+        except:
+            return render(request, 'produto/produto_form.html', {'errors': 'Erro ao cadastrar marca', 'form': ProdutoForm()})
+    return HttpResponse(status=404)
 
 def gerar_relatorio(request):
     produtos = Produto.objects.all()
@@ -125,7 +148,7 @@ def gerar_relatorio(request):
     # Linhas da tabela
     for produto in produtos:
         pdf.cell(largura_coluna_nome, altura_linha, produto.nome, 1)
-        pdf.cell(largura_coluna_marca, altura_linha, produto.marca, 1, 0, 'C')
+        pdf.cell(largura_coluna_marca, altura_linha, str(produto.marca), 1, 0, 'C')
         pdf.cell(largura_coluna_litragem, altura_linha, f"{produto.litragem:.2f}", 1, 0, 'C')
         pdf.cell(largura_coluna_quantidade, altura_linha, str(produto.quantidade), 1, 0, 'C')
         pdf.cell(largura_coluna_valor, altura_linha, f"R$ {produto.valor:.2f}", 1, 1, 'C')
@@ -145,8 +168,9 @@ def gerar_relatorio(request):
     pdf.cell(largura_cabecalho, altura_linha, "Total de produtos por marca:", 1, 1, 'L', 1)
 
     pdf.set_text_color(0, 0, 0)
+    marcas = Marca.objects.all()
     for marca in totalDeProdutosPorMarca:
-        pdf.cell(largura_cabecalho, altura_linha, f"{marca['marca']}: {marca['total']}", 0, 1, 'L')        
+        pdf.cell(largura_cabecalho, altura_linha, marcas.get(id=marca['marca']).nome + f": {marca['total']}", 1, 1, 'L')        
 
 
     # Criando a resposta HTTP com o PDF gerado

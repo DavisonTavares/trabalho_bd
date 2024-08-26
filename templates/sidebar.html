@@ -9,14 +9,9 @@
                 {% url 'lista_produtos' as lista_produtos_url %}
                 {% if request.path != lista_produtos_url %}
                     <li class="nav-item">
-                        <a href="{{ lista_produtos_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Produto</a>
+                        <a href="{{ lista_produtos_url }}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Produtos</a>
                     </li>
-                {% endif %}
-                {% if request.path == lista_produtos_url %}
-                    <li class="nav-item">
-                        <a href="{% url 'gerar_relatorio' %}" style="color: white; font-size: 1.5em; font-weight: bold; text-decoration: none;">Gerar Relatorio</a>
-                    </li>
-                {% endif %}
+                {% endif %}                
                 {% url 'cadastrar_produto' as cadastrar_produto_url %}
                 {% if request.path != cadastrar_produto_url %}
                     <li class="nav-item">
