@@ -12,11 +12,16 @@
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
   <body>
-    {% include 'sidebar.html' with title_page='PRODUTO' %}
+    {% include 'sidebar.html' with title_page='PRODUTOS' %}
     <main>
       <div class="container-fluid">
-        <form class="d-flex" method="POST" role="search" style="margin-right: 10px ; width: 30vw; padding: 10px; align-items: center; right: 0; position: absolute;">
-          {% csrf_token %}
+        <div style="margin-right: 10px ; width: 50vw; padding: 10px; align-items: center; right: 0; position: absolute;  display: flex; flex-direction: row;">
+          <button
+          style='margin-top: 0; padding-top: 5px; padding-bottom: 5px'
+          onClick="window.location.href='{% url 'gerar_relatorio' %}'"
+          >GERAR RELATÓRIO</button>
+          <form class="d-flex" method="POST" role="search" style='width: 30vw; margin-left: 30px;'>
+              {% csrf_token %}
             <input
             class="form-control"
             style="border-right: none; border-radius: 5px 0 0 5px; hover: none;"
@@ -27,6 +32,7 @@
           />
           <button class="btn btn-outline-success" style="margin: auto;" type="submit">Search</button>
         </form>
+      </div>
       </div>
       <div
         style="
