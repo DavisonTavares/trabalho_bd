@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
 from fpdf import FPDF
-from django.views.generic.edit import UpdateView
+import unicodedata
 
 def limpar_cpf(cpf):
     return ''.join(filter(str.isdigit, cpf))
@@ -54,14 +54,16 @@ class cadastrar_cliente(CreateView):
         dados_endereco = []
         # Coleta os dados usando request.POST.get para cada campo
         for campo in campos_cliente:
+            valor = request.POST.get(campo)
+            if campo == 'nome':
+                nomeFormatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII')
+                nomeFormatado = nomeFormatado.lower()
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
-            valor = request.POST.get(campo)
             if campo == 'cpf':
                 valor = limpar_cpf(valor)
             if campo == 'telefone':
                 valor = limpar_telefone(valor)
-
             dados_cliente.append(valor)
         for campo in campos_endereco:
             valor = request.POST.get(campo)
@@ -72,6 +74,8 @@ class cadastrar_cliente(CreateView):
             dados_endereco = dict(zip(campos_endereco, dados_endereco))
             endereco = Endereco.objects.create(**dados_endereco)
             dados_cliente.append(endereco)
+            dados_cliente.append(nomeFormatado)
+            campos_cliente.append('nome_formatado')
             dados_cliente = dict(zip(campos_cliente, dados_cliente))
             Cliente.objects.create(**dados_cliente)
         except IntegrityError:
@@ -86,8 +90,13 @@ class cadastrar_cliente(CreateView):
         return redirect(reverse_lazy("lista_clientes"))
 class listar_cliente(ListView):
     model = Cliente
-
-
+    template_name = 'cliente\cliente_list.html'
+    def post(self, request, *args, **kwargs):  
+        nome = request.POST.get('search')
+        nome = unicodedata.normalize('NFKD', nome).encode('ASCII', 'ignore').decode('ASCII').lower()
+        
+        clientes = Cliente.objects.filter(nome_formatado__contains=nome)
+        return render(request, self.template_name, {'cliente_list': clientes})
 class editar_cliente(UpdateView):
     model = Cliente
     form_class = ClienteForm
