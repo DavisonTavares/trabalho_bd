@@ -19,14 +19,88 @@ function formatarTelefone(telefone) {
 function applyMask(event) {
     const input = event.target
     if (input.id === 'cpf') {
-        input.value = formatarCpf(input.value)
+        document.getElementById('cpf-error').style.display = 'none';
+        var cpf = input.value.replace(/[^\d]/g, '')
+        if (cpf.length === 11){
+            var Soma = 0
+            var Resto
+            for (i=1; i<=9; i++)
+              Soma = Soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
+          
+            Resto = (Soma * 10) % 11
+          
+            if ((Resto == 10) || (Resto == 11)) 
+              Resto = 0
+          
+            if (Resto != parseInt(cpf.substring(9, 10)) )
+                
+                return document.getElementById('cpf-error').style.display = 'block';
+            
+            Soma = 0
+          
+            for (i = 1; i <= 10; i++)
+              Soma = Soma + parseInt(cpf.substring(i-1, i)) * (12 - i)
+          
+            Resto = (Soma * 10) % 11
+          
+            if ((Resto == 10) || (Resto == 11)) 
+              Resto = 0
+          
+            if (Resto != parseInt(cpf.substring(10, 11) ) )
+                
+                return document.getElementById('cpf-error').style.display = 'block';
+            
+                
+                
+            input.value = formatarCpf(input.value)
+          }
+       
     } else if (input.id === 'cep') {
-        input.value = formatarCep(input.value)
+        document.getElementById('cep-error').style.display = 'none';
+        var cep = input.value.replace(/\D/g, '');
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('rua').value = data.logradouro;
+                        document.getElementById('bairro').value = data.bairro;
+                        document.getElementById('cidade').value = data.localidade;
+                        document.getElementById('estado').value = data.uf;
+                    } else {
+                        
+                        limparFormulario()
+                        document.getElementById('rua').disabled  = true;
+                        document.getElementById('numero').disabled  = true;
+                        document.getElementById('estado').disabled  = true;
+                        document.getElementById('cidade').disabled  = true;
+                        document.getElementById('bairro').disabled  = true;
+                        return document.getElementById('cep-error').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    limparFormulario()
+                    document.getElementById('rua').disabled  = true;
+                    document.getElementById('numero').disabled  = true;
+                    document.getElementById('estado').disabled  = true;
+                    document.getElementById('cidade').disabled  = true;
+                    document.getElementById('bairro').disabled  = true;
+                    
+                });
+                input.value = formatarCep(input.value)
+            }
+            
+            limparFormulario();
     } else if (input.id === 'telefone') {
         input.value = formatarTelefone(input.value)
     }
 }
-
+function limparFormulario() {
+    document.getElementById('rua').value = '';
+    document.getElementById('bairro').value = '';
+    document.getElementById('cidade').value = '';
+    document.getElementById('estado').value = '';
+}
 const exampleModal = document.getElementById('exampleModal')
 if (exampleModal) {
   exampleModal.addEventListener('show.bs.modal', event => {

@@ -26,10 +26,10 @@ def formatar_telefone(telefone):
 
 class cadastrar_cliente(CreateView):
     template_name = 'cliente\cliente_form.html'
-    def cliente_return(self,id, cliente, endereco):
-        cpf = formatar_cpf(cliente["cpf"])
-        cep = formatar_cep(endereco["cep"])
-        telefone = formatar_telefone(cliente["telefone"])
+    def cliente_return(self,id, cliente, endereco):# função para criar o objeto que será retornado caso ocorra um erro no cadastramento 
+        cpf = formatar_cpf(cliente["cpf"]) # formata o cpf no padrão 111.111.111-11
+        cep = formatar_cep(endereco["cep"]) # formata o cep no padrão 111111-11
+        telefone = formatar_telefone(cliente["telefone"]) # formata o telefone no padrão (11) 11111-1111
         cliente = {
             'id': id,
             'nome': cliente["nome"], 
@@ -49,15 +49,15 @@ class cadastrar_cliente(CreateView):
     def post(self, request, *args, **kwargs):   
         campos_cliente = ['nome', 'cpf', 'telefone','endereco']
         campos_endereco =['rua', 'numero', 'complemento', 'bairro', 'cidade', 'estado', 'cep']
-        # Lista para armazenar os dados
+        # Listas para armazenar os dados recebidos
         dados_cliente = []
         dados_endereco = []
         # Coleta os dados usando request.POST.get para cada campo
         for campo in campos_cliente:
             valor = request.POST.get(campo)
             if campo == 'nome':
-                nomeFormatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII')
-                nomeFormatado = nomeFormatado.lower()
+                 # remove acentos e garante que as letras sejam minusculas
+                nomeFormatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII').lower()
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
             if campo == 'cpf':
@@ -80,13 +80,13 @@ class cadastrar_cliente(CreateView):
             Cliente.objects.create(**dados_cliente)
         except IntegrityError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado.",'pagina':'cadastrar'})
         except OperationalError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Problema com o banco de dados."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Problema com o banco de dados.",'pagina':'cadastrar'})
         except Exception as e:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro inesperado: {e}"})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro inesperado: {e}",'pagina':'cadastrar'})
         return redirect(reverse_lazy("lista_clientes"))
 class listar_cliente(ListView):
     model = Cliente
@@ -94,14 +94,13 @@ class listar_cliente(ListView):
     def post(self, request, *args, **kwargs):  
         nome = request.POST.get('search')
         nome = unicodedata.normalize('NFKD', nome).encode('ASCII', 'ignore').decode('ASCII').lower()
-        
-        clientes = Cliente.objects.filter(nome_formatado__contains=nome)
+        clientes = Cliente.objects.filter(nome_formatado__contains=nome)  # filtra os clientes pelo nome formatado caso ele contenha parte do nome
         return render(request, self.template_name, {'cliente_list': clientes})
 class editar_cliente(UpdateView):
     model = Cliente
     form_class = ClienteForm
     template_name = 'cliente\cliente_form.html'
-    def campos_alterados(self,cliente,endereco,dados):
+    def campos_alterados(self,cliente,endereco,dados): # função que verifica quais campos de cliente forma alterados
         campos_cliente = {}
         campos_endereco = {}
         # Atualiza campos do cliente
@@ -154,13 +153,12 @@ class editar_cliente(UpdateView):
         except Cliente.DoesNotExist:
             return HttpResponseNotFound('Cliente não encontrado.')
         except OperationalError:
-            
             return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
         except Exception as e:
             return HttpResponse(f"Erro inesperado: {e}", status=500) 
-        return render(request, self.template_name, {'cliente': cliente})
+        return render(request, self.template_name, {'cliente': cliente,'pagina':'editar'})
     def post(self, request, *args, **kwargs):
-        try:        
+        try:     
             id = kwargs.get('cliente_id', None)
             nome = request.POST.get('nome')
             cpf = limpar_cpf(request.POST.get('cpf'))
@@ -192,13 +190,13 @@ class editar_cliente(UpdateView):
         except IntegrityError:
             # Renderiza o template com uma mensagem de erro
             cliente = self.cliente_return(id,cliente,endereco)
-            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado."})
+            return render(request, self.template_name, {'cliente':cliente, 'erro': f"Dados inválidos ou CPF já cadastrado.",'pagina':'editar'})
         except OperationalError:
             cliente = self.cliente_return(id,cliente,endereco)
-            return render(request, self.template_name, {'cliente': cliente, 'erro': "Problema com o banco de dados."})
+            return render(request, self.template_name, {'cliente': cliente, 'erro': "Problema com o banco de dados.",'pagina':'editar'})
         except Exception as e:
             cliente = self.cliente_return(id,cliente,endereco)
-            return render(request, self.template_name, {'cliente': cliente, 'erro': f"Erro inesperado: {e}"})
+            return render(request, self.template_name, {'cliente': cliente, 'erro': f"Erro inesperado: {e}",'pagina':'editar'})
 
         return redirect(reverse_lazy("lista_clientes"))
     
@@ -225,7 +223,7 @@ class deletar_cliente(DeleteView):
             return HttpResponseNotFound('Cliente não encontrado.')
         try:
             cliente = Cliente.objects.get(id=id)
-            endereco = cliente.endereco
+            endereco = Endereco.objects.get(id=cliente.endereco.id)
             cliente.delete()  # Deleta o cliente
             endereco.delete()  # Deleta o endereço
             return JsonResponse({'message': 'Cliente excluído com sucesso.'}, status=200)
