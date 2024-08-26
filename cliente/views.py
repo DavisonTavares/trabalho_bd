@@ -47,36 +47,34 @@ class cadastrar_cliente(CreateView):
     def get(self, request, *args, **kwargs):
         return render(request,self.template_name,{'cliente':False} )
     def post(self, request, *args, **kwargs):   
-        campos_cliente = ['nome', 'cpf', 'telefone','endereco']
+        campos_cliente = ['nome', 'cpf', 'telefone','endereco','nome_formatado']
         campos_endereco =['rua', 'numero', 'complemento', 'bairro', 'cidade', 'estado', 'cep']
         # Listas para armazenar os dados recebidos
-        dados_cliente = []
-        dados_endereco = []
+        dados_cliente = {}
+        dados_endereco = {}
         # Coleta os dados usando request.POST.get para cada campo
         for campo in campos_cliente:
             valor = request.POST.get(campo)
             if campo == 'nome':
                  # remove acentos e garante que as letras sejam minusculas
-                nomeFormatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII').lower()
+                nome_formatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII').lower()
             if campo == 'endereco':
                 continue  # Pula o campo 'endereco'
             if campo == 'cpf':
                 valor = limpar_cpf(valor)
             if campo == 'telefone':
                 valor = limpar_telefone(valor)
-            dados_cliente.append(valor)
+            dados_cliente[campo] = valor
         for campo in campos_endereco:
             valor = request.POST.get(campo)
             if campo == 'cep':
                 valor = limpar_cep(valor)
-            dados_endereco.append(valor)
+            dados_endereco[campo] = valor
         try:
-            dados_endereco = dict(zip(campos_endereco, dados_endereco))
             endereco = Endereco.objects.create(**dados_endereco)
-            dados_cliente.append(endereco)
-            dados_cliente.append(nomeFormatado)
-            campos_cliente.append('nome_formatado')
-            dados_cliente = dict(zip(campos_cliente, dados_cliente))
+            dados_cliente['endereco'] = endereco
+            dados_cliente['nome_formatado']= nome_formatado
+            
             Cliente.objects.create(**dados_cliente)
         except IntegrityError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)

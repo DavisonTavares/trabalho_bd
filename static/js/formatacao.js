@@ -70,23 +70,17 @@ function applyMask(event) {
                     } else {
                         
                         limparFormulario()
-                        document.getElementById('rua').disabled  = true;
-                        document.getElementById('numero').disabled  = true;
-                        document.getElementById('estado').disabled  = true;
-                        document.getElementById('cidade').disabled  = true;
-                        document.getElementById('bairro').disabled  = true;
+                        document.getElementById('rua').readOnly = true;;
+                        document.getElementById('estado').readOnly = true;
+                        document.getElementById('cidade').readOnly = true;
+                        document.getElementById('bairro').readOnly = true;
                         return document.getElementById('cep-error').style.display = 'block';
                     }
                 })
-                .catch(error => {
-                    limparFormulario()
-                    document.getElementById('rua').disabled  = true;
-                    document.getElementById('numero').disabled  = true;
-                    document.getElementById('estado').disabled  = true;
-                    document.getElementById('cidade').disabled  = true;
-                    document.getElementById('bairro').disabled  = true;
-                    
-                });
+                document.getElementById('rua').readOnly = false;
+                document.getElementById('estado').readOnly = true;
+                document.getElementById('cidade').readOnly = true;
+                document.getElementById('bairro').readOnly = true;
                 input.value = formatarCep(input.value)
             }
             
