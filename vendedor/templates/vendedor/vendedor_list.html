@@ -34,9 +34,6 @@
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>CPF</th>
-                        <th>Telefone</th>
-                        <th>Email</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -44,9 +41,6 @@
                     {% for vendedor in vendedor_list %}
                         <tr>
                             <td>{{ vendedor.nome }}</td>
-                            <td class="cpf">{{ vendedor.cpf }}</td>
-                            <td class="telefone">{{ vendedor.telefone }}</td>
-                            <td>{{ vendedor.email }}</td>
                             <td>
                                 <form action="{% url 'editar_vendedor' vendedor.id %}" method="get" class="custom-form">
                                     <button type="submit">Editar</button>
@@ -67,7 +61,9 @@
                 <form action="{% url 'cadastrar_vendedor' %}" method="get" class="custom-form">
                     <button type="submit" style="width: 100%;">Cadastrar Vendedor</button>
                 </form>
-                <button id="gerarPDF" type="button" style="width: 100%;">Gerar relatório</button>
+                <form action="/gerar_relatorio_vendedor" method="get" class="custom-form">
+                    <button type="submit" style="width: 100%;">Gerar relatório</button>
+                </form>
             </div>
         </section>
     </main>

@@ -21,5 +21,6 @@ urlpatterns = [
     path('vendedor/cadastrar/', cadastrar_vendedor.as_view(), name='cadastrar_vendedor'),
     path('vendedor/listar', listar_vendedor.as_view(), name='listar_vendedor'),
     path('vendedor/editar/<int:pk>/', editar_vendedor.as_view(), name='editar_vendedor'),
-    path('vendedor/deletar/<int:pk>/', deletar_vendedor.as_view(), name='deletar_vendedor')
+    path('vendedor/deletar/<int:pk>/', deletar_vendedor.as_view(), name='deletar_vendedor'),
+    path('gerar_relatorio_vendedor/', gerar_relatorio_vendedor, name='gerar_relatorio_cliente'),
 ]

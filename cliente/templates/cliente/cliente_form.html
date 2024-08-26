@@ -28,7 +28,7 @@
     
                 <div>
                     <label for="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" value="{% if cliente %}{{cliente.nome }}{% else %}{{''}}{% endif %}" required>
+                    <input type="text" id="nome" name="nome" value="{% if cliente %}{{ cliente.nome }}{% else %}{{ '' }}{% endif %}" required pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]+" title="Por favor, insira apenas letras.">
                 </div>
     
                 <div style="display: flex; justify-content: space-between; flex-direction: row;">

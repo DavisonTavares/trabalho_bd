@@ -27,13 +27,28 @@
     </style>
 </head>
 <body>
-    {% include 'sidebar.html' with title_page='LISTA CLIENTES' %}
+    {% include 'sidebar.html' with title_page='SalesConnect' %}
     <main
     style="display: flex; justify-content: center; align-items: center; height: 90vh;"
     >
+    
     <section
         style="max-height: 80vh; width: 80vw; background-color: #f5f5f5; padding: 20px; border-radius: 10px; flex-direction: column;"
         >
+        <div class="container-fluid">
+            <form class="d-flex" method="POST" role="search" style="margin-right: 10px ; width: 30vw; padding: 10px; align-items: center; right: 0;">
+              {% csrf_token %}
+                <input
+                class="form-control"
+                style="border-right: none; border-radius: 5px 0 0 5px; hover: none;"
+                type="search"
+                name="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <button class="btn btn-outline-success" style="margin: auto;" type="submit">Search</button>
+            </form>
+          </div>
         <table id="clientesTabela">
             <thead>
                 <tr>
