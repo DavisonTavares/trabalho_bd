@@ -10,6 +10,10 @@ class ProdutoForm(forms.ModelForm):
             'litragem': forms.NumberInput(attrs={'step': '0.01'}),
             'valor': forms.NumberInput(attrs={'step': '0.01'}),
         }
+        labels = {
+            'litragem': 'litragem (L)',
+            'url_imagem': 'URL da imagem'
+        }
         def clean_url_imagem(self):
             url_imagem = self.cleaned_data.get('url_imagem')
             if not url_imagem:
