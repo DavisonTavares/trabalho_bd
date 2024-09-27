@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from .forms import ClienteForm
 from django.db import IntegrityError, OperationalError
 from fpdf import FPDF
+import requests
 import unicodedata
 
 def limpar_cpf(cpf):
@@ -33,6 +34,10 @@ class cadastrar_cliente(CreateView):
         cliente = {
             'id': id,
             'nome': cliente["nome"], 
+            'time': cliente["time"], 
+            'audiovisual': cliente["audiovisual"], 
+            'naturalidade_cidade': cliente["naturalidade_cidade"], 
+            'naturalidade_estado': cliente["naturalidade_estado"], 
             'cpf': cpf,
             'telefone': telefone,
             'rua': endereco["rua"],
@@ -45,9 +50,32 @@ class cadastrar_cliente(CreateView):
         }
         return cliente
     def get(self, request, *args, **kwargs):
-        return render(request,self.template_name,{'cliente':False} )
+        # Obter estados brasileiros da API do IBGE
+        url_estados = "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
+        response = requests.get(url_estados)
+        
+        if response.status_code == 200:
+            estados = response.json()
+            estados = sorted(estados, key=lambda estado: estado['nome'])
+        else:
+            estados = []
+
+        times_serie_a = [
+        "Botafogo", "Flamengo", "Palmeiras", "São Paulo", "Grêmio", "Internacional",
+        "Fluminense", "Athletico-PR", "Atlético-MG", "Cruzeiro", "Santos", "Corinthians",
+        "Fortaleza", "Bahia", "Vasco", "Cuiabá", "Goiás", "Coritiba", "América-MG"
+        ]
+        audiovisuais = ["One Piece","Code Geass","The Wire","CSI ",'Nenhum']
+        context = {
+        'estados': estados,
+        'times': times_serie_a,
+        'cliente': False,
+        'audiovisuais':audiovisuais
+        }
+        return render(request,self.template_name,context )
     def post(self, request, *args, **kwargs):   
-        campos_cliente = ['nome', 'cpf', 'telefone','endereco','nome_formatado']
+        campos_cliente = ['nome','time','audiovisual','naturalidade_cidade','naturalidade_estado', 'cpf', 'telefone','endereco','nome_formatado','naturalidade_cidade_formatado','naturalidade_estado_formatado']
+        
         campos_endereco =['rua', 'numero', 'complemento', 'bairro', 'cidade', 'estado', 'cep']
         # Listas para armazenar os dados recebidos
         dados_cliente = {}
@@ -64,6 +92,10 @@ class cadastrar_cliente(CreateView):
                 valor = limpar_cpf(valor)
             if campo == 'telefone':
                 valor = limpar_telefone(valor)
+            if campo == 'naturalidade_cidade':
+                naturalidade_cidade_formatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII').lower()
+            if campo == 'naturalidade_estado':
+                naturalidade_estado_formatado = unicodedata.normalize('NFKD', valor).encode('ASCII', 'ignore').decode('ASCII').lower()
             dados_cliente[campo] = valor
         for campo in campos_endereco:
             valor = request.POST.get(campo)
@@ -74,7 +106,8 @@ class cadastrar_cliente(CreateView):
             endereco = Endereco.objects.create(**dados_endereco)
             dados_cliente['endereco'] = endereco
             dados_cliente['nome_formatado']= nome_formatado
-            
+            dados_cliente['naturalidade_cidade_formatado']= naturalidade_cidade_formatado
+            dados_cliente['naturalidade_estado_formatado']= naturalidade_estado_formatado
             Cliente.objects.create(**dados_cliente)
         except IntegrityError:
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
@@ -131,6 +164,10 @@ class editar_cliente(UpdateView):
         cliente = {
             'id': id,
             'nome': cliente.nome,
+            'time': cliente.time, 
+            'audiovisual': cliente.audiovisual, 
+            'naturalidade_cidade': cliente.naturalidade_cidade, 
+            'naturalidade_estado': cliente.naturalidade_estado,   
             'cpf': cpf,
             'telefone': telefone,
             'rua': endereco.rua,
@@ -154,7 +191,29 @@ class editar_cliente(UpdateView):
             return HttpResponse("Erro operacional: Problema com o banco de dados.", status=500)
         except Exception as e:
             return HttpResponse(f"Erro inesperado: {e}", status=500) 
-        return render(request, self.template_name, {'cliente': cliente,'pagina':'editar'})
+        url_estados = "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
+        response = requests.get(url_estados)
+        
+        if response.status_code == 200:
+            estados = response.json()
+            estados = sorted(estados, key=lambda estado: estado['nome'])
+        else:
+            estados = []
+
+        times_serie_a = [
+        "Botafogo", "Flamengo", "Palmeiras", "São Paulo", "Grêmio", "Internacional",
+        "Fluminense", "Athletico-PR", "Atlético-MG", "Cruzeiro", "Santos", "Corinthians",
+        "Fortaleza", "Bahia", "Vasco", "Cuiabá", "Goiás", "Coritiba", "América-MG"
+        ]
+        audiovisuais = ["One Piece","Code Geass","The Wire","CSI ",'Nenhum']
+        context = {
+        'estados': estados,
+        'times': times_serie_a,
+        'cliente': cliente,
+        'audiovisuais':audiovisuais,
+        'pagina':'editar'
+        }
+        return render(request, self.template_name, context)
     def post(self, request, *args, **kwargs):
         try:     
             id = kwargs.get('cliente_id', None)
