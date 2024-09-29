@@ -12,7 +12,7 @@ from .forms import ProdutoForm
 from django.db.models import Count
 from fpdf import FPDF
 import unicodedata
-
+from fpdf import FPDF
 
 
 def deletar_produto(request, produto_id):
@@ -45,8 +45,9 @@ def editar_produto(request, produto_id):
     
     form = ProdutoForm(instance=produto)
     marcas = Marca.objects.all()
-    return render(request, 'produto/produto_form.html', {'form': form, 'titlebutton': 'Editar', 'produto_id': produto_id, 'marcas': marcas})
-
+    produtos = Produto.objects.all()
+    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'produto_id': produto_id, 'marcas': marcas, 'form': form, 'titlebutton': 'Editar'})
+    
     
 def cadastrar_produto(request):
     if request.method == 'POST':
@@ -92,8 +93,8 @@ def listar_produto(request):
             produtos = Produto.objects.all()
     else:
         produtos = Produto.objects.all()
-
-    return render(request, 'produto/produto_list.html', {'produtos': produtos})    
+    marcas = Marca.objects.all()
+    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar'})
 
 def cadastrar_marca(request):
     print(request.method)

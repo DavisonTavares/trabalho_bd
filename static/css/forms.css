@@ -10,7 +10,7 @@
 }
 
 .custom-form label {
-    font-size: 16px; /* Ajuste o tamanho da fonte conforme necessário */
+    font-size: 1rem; /* Tamanho do texto do rótulo */
     color: #333; /* Cor do texto do rótulo */
 }
 
@@ -18,7 +18,7 @@
     width: 100%;
     height: 5.5vh;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1rem;
     border: 1px solid #dfdfdf;
     border-radius: 4px;
     background-color: rgb(255, 255, 255);
@@ -26,8 +26,8 @@
 .custom-form div select {
     width: 100%;
     height: 5.5vh;
-    padding: 10px;
-    font-size: 16px;
+    padding: 5px;
+    font-size: 1rem;
     border: 1px solid #dfdfdf;
     border-radius: 4px;
     background-color: rgb(255, 255, 255);
@@ -41,7 +41,7 @@
 button {
     margin-top: 15px;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1rem;
     border: 1px solid cadetblue;
     border-radius: 4px;
     background-color: cadetblue;
@@ -52,7 +52,7 @@ button {
 .product-card {
     width: 12vw;
     height: 35vh;
-    max-height: 300px;
+    max-height: 35vh; /* Ajuste conforme necessário */
     border: 1px solid #ccc;
     border-radius: 10px;
     overflow: hidden;
@@ -109,12 +109,12 @@ button {
 }
 
 .product-name {
-    font-size: 1.2em; /* Ajuste conforme necessário */
+    font-size: 1em; /* Ajuste conforme necessário */
     margin: 0;
 }
 
 .product-price {
-    font-size: 1.5em; /* Ajuste conforme necessário */
+    font-size: 1.2em; /* Ajuste conforme necessário */
     margin: 0;
     font-weight: bold ;    
 }
