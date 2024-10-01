@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: white;">
     <div class="container-fluid">
         <img src="{% static 'img/logo.png' %}" alt="logo" style="width: 30px; height: 30px;">
-        <h1 style="color: cadetblue; font-size: 1.2em; font-weight: bold;" class="ms-auto mb-2 mb-lg-0" >RAPIDEX</h1>
+        <h1 style="color: cadetblue; font-size: 1.2em; font-weight: bold;" class="ms-auto mb-2 mb-lg-0">RAPIDEX</h1>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,43 +11,38 @@
                 {% url 'lista_produtos' as lista_produtos_url %}
                     <li class="nav-item">
                         <a href="{{ lista_produtos_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'PRODUTOS' %} border-bottom: 2px solid cadetblue; {% endif %} "                
-                        >Produtos</a>
-                    </li>                            
+                        {% if title_page == 'PRODUTOS' %} border-bottom: 2px solid cadetblue; {% endif %}">Produtos</a>
+                    </li>
                 {% url 'cadastrar_produto' as cadastrar_produto_url %}
                     <li class="nav-item">
                         <a href="{{ cadastrar_produto_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'CADASTRAR PRODUTO' %} border-bottom: 2px solid cadetblue; {% endif %}
-                        ">Cadastrar Produto</a>
-                    </li>            
-
+                        {% if title_page == 'CADASTRAR PRODUTO' %} border-bottom: 2px solid cadetblue; {% endif %}">Cadastrar Produto</a>
+                    </li> 
                 {% url 'cadastrar_cliente' as cadastrar_cliente_url %}
                     <li class="nav-item">
                         <a href="{{ cadastrar_cliente_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'CADASTRAR CLIENTE' %} border-bottom: 2px solid cadetblue; {% endif %}
-                        ">Cadastrar Cliente</a>
-                    </li>            
-
+                        {% if title_page == 'CADASTRAR CLIENTE' %} border-bottom: 2px solid cadetblue; {% endif %}">Cadastrar Cliente</a>
+                    </li>             
                 {% url 'lista_clientes' as lista_clientes_url %}
                     <li class="nav-item">
                         <a href="{{ lista_clientes_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'CLIENTE' %} border-bottom: 2px solid cadetblue; {% endif %}
-                        ">Lista Clientes</a>
-                    </li>            
-
+                        {% if title_page == 'CLIENTE' %} border-bottom: 2px solid cadetblue; {% endif %}">Lista Clientes</a>
+                    </li>             
                 {% url 'listar_vendedor' as listar_vendedor_url %}
                     <li class="nav-item">
                         <a href="{{ listar_vendedor_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'VENDEDORES' %} border-bottom: 2px solid cadetblue; {% endif %}
-                        ">Vendedores</a>
-                    </li>            
+                        {% if title_page == 'VENDEDORES' %} border-bottom: 2px solid cadetblue; {% endif %}">Vendedores</a>
+                    </li>
                 {% url 'cadastrar_vendedor' as cadastrar_vendedor_url %}
                     <li class="nav-item">
                         <a href="{{ cadastrar_vendedor_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
-                        {% if title_page == 'CADASTRAR VENDEDOR' %} border-bottom: 2px solid cadetblue; {% endif %}
-                        ">Cadastrar Vendedor</a>
-                    </li>            
-
+                        {% if title_page == 'CADASTRAR VENDEDOR' %} border-bottom: 2px solid cadetblue; {% endif %}">Cadastrar Vendedor</a>
+                    </li>
+                {% url 'cadastrar_pedido' as cadastrar_pedido_url %}
+                    <li class="nav-item">
+                        <a href="{{ cadastrar_pedido_url }}" style="color: cadetblue; font-size: 0.8em; font-weight: bold; text-decoration: none;
+                        {% if title_page == 'CRIAR PEDIDO' %} border-bottom: 2px solid cadetblue; {% endif %}">Criar Pedido</a>
+                    </li>  
             </ul>
         </div>
     </div>
