@@ -51,8 +51,8 @@ button {
 
 .product-card {
     width: 12vw;
-    height: 35vh;
-    max-height: 35vh; /* Ajuste conforme necessário */
+    min-height: 35vh;
+    max-height: 40vh; /* Ajuste conforme necessário */
     border: 1px solid #ccc;
     border-radius: 10px;
     overflow: hidden;
@@ -89,7 +89,7 @@ button {
 
 .product-volume-overlay {
     position: absolute;
-    top: 125px; /* Ajuste a posição conforme necessário */
+    top: 135px; /* Ajuste a posição conforme necessário */
     right: -5px; /* Ajuste a posição conforme necessário */
     background-color: cadetblue;
     padding: 5px 10px;
@@ -99,6 +99,9 @@ button {
     z-index: 10; /* Garante que o overlay fique acima da imagem */
     width: 5vw;
     height: 3vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
 }
 
 .product-info {

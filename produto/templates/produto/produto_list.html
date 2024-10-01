@@ -6,53 +6,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>lista clientes</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+
     <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
   <body>
-    {% if '/editar_produto/' in request.path %}    
+    {% if '/editar_produto/' in request.path %}
     <!-- Insira aqui o código ou o modal que deseja mostrar -->
     <script>
-        // Caso queira abrir o modal com JavaScript
-        document.addEventListener('DOMContentLoaded', function () {
-            var editarProdutoModal = new bootstrap.Modal(document.getElementById('createClienteModal'));
-            editarProdutoModal.show();
-        });
+      // Caso queira abrir o modal com JavaScript
+      document.addEventListener("DOMContentLoaded", function () {
+        var editarProdutoModal = new bootstrap.Modal(
+          document.getElementById("createClienteModal")
+        );
+        editarProdutoModal.show();
+      });
     </script>
-  {% endif %}
-    {% include 'sidebar.html' with title_page='PRODUTOS' %}
+    {% endif %} {% include 'sidebar.html' with title_page='PRODUTOS' %}
     <main>
       <div class="container-fluid">
-        <div style="margin-right: 10px ; width: 50vw; padding: 5px; align-items: center; right: 0; position: absolute;  display: flex; flex-direction: row;">
-          <button
-          style='margin-top: 0; padding-top: 8px; padding-bottom: 5px; font-size: 0.8em;'
-          onClick="window.location.href='{% url 'gerar_relatorio' %}'"
-          >GERAR RELATÓRIO</button>
-          <form class="d-flex" method="POST" role="search" style='width: 26.5vw; margin-left: 25px;'>
-              {% csrf_token %}
-            <input
-            class="form-control"
-            style="border-right: none; border-radius: 5px 0 0 5px; hover: none;"
-            type="search"
-            name="search"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <button class="btn btn-outline-success" style="margin: auto;" type="submit">Search</button>
-        </form>
-        <button
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#createClienteModal"
-          data-bs-whatever="@mdo"
-          style="right: 0; margin-top: 0; padding-top: 5px; padding-bottom: 5px; position: absolute; margin-right: 20px; padding: 8px; font-size: 0.8em;"
+        <div
+          style="
+            margin-right: 10px;
+            padding: 5px;
+            align-items: center;
+            right: 0;
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between; /* Para distribuir os itens com o máximo de espaço entre eles */
+          "
         >
-          CADASTRAR PRODUTO
-        </button>
-      </div>
+          <button
+            style="
+              margin-top: 0;
+              padding-top: 8px;
+              padding-bottom: 5px;
+              font-size: 0.8em;
+              margin-right: 10px;
+            "
+            onClick="window.location.href='{% url 'gerar_relatorio' %}'"
+          >
+            GERAR RELATÓRIO
+          </button>
+          <form
+            class="d-flex"
+            method="POST"
+            role="search"
+            style="width: 46.5vw; margin-right: 10px"
+          >
+            {% csrf_token %}
+
+            <label for="priceMin" style="margin-right: 5px">P. Mín.:</label>
+            <input
+              type="number"
+              id="priceMin"
+              name="priceMin"
+              placeholder="0.00"
+              style="border-radius: 5px 0 0 5px; hover: none; width: 5vw"
+              step="0.01"
+              min="0.01"
+            />
+
+            <label for="priceMax" style="margin-right: 5px; margin-left: 10px"
+              >P. Máx.:</label
+            >
+            <input
+              type="number"
+              id="priceMax"
+              name="priceMax"
+              placeholder="0.00"
+              style="border-radius: 5px 0 0 5px; hover: none; width: 5vw"
+              step="0.01"
+              min="0.01"
+            />
+            <input
+              class="form-control"
+              style="
+                border-right: none;
+                border-radius: 5px 0 0 5px;
+                hover: none;
+                width: 20vw;
+              "
+              type="search"
+              name="search"
+              placeholder="Pesquisar produto por nome ou marca"
+              aria-label="Search"
+            />
+            <button
+              type="submit"
+              style="
+                border-left: none;
+                border-radius: 0 5px 5px 0;
+                margin-top: 0;
+                padding-top: 8px;
+                padding-bottom: 5px;
+                font-size: 0.8em;
+              "
+              onclick="return validatePrices()"
+            >
+              Filtrar
+            </button>
+          </form>
+          <button
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#createClienteModal"
+            data-bs-whatever="@mdo"
+            style="
+              margin-top: 0;
+              padding-top: 8px;
+              padding-bottom: 5px;
+              font-size: 0.8em;
+              margin-right: 10px;
+            "
+          >
+            CADASTRAR PRODUTO
+          </button>
+          <button
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#marcaModal"
+            data-bs-whatever="@mdo"
+            style="
+              margin-top: 0;
+              padding-top: 8px;
+              padding-bottom: 5px;
+              font-size: 0.8em;
+              margin-right: 10px;
+            "
+          >
+            ADICIONAR MARCA
+          </button>
+        </div>
       </div>
       <div
         style="
@@ -88,67 +185,124 @@
         {% endfor %}
       </div>
       <div
-      class="modal fade"
-      id="createClienteModal"
-      tabindex="-1"
-      aria-labelledby="createClienteModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content" style="justify-content: center; align-items: center;">
+        class="modal fade"
+        id="createClienteModal"
+        tabindex="-1"
+        aria-labelledby="createClienteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div
+            class="modal-content"
+            style="justify-content: center; align-items: center"
+          >
             <div
-          style="
-            max-height: 80vh;
-            width: 45vw;
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            flex-direction: column;
-            margin: 0;
-            align-items: center;
-          "
-        >
-          <h2
-            style="
-              font-size: 1.5em;
-              font-weight: bold;
-              margin-bottom: 20px;
-              margin: auto;
-              text-align: center;
-            "
-          >
-            Cadastrar produto
-          </h2>
-          <form method="POST" 
-            action="{% url 'cadastrar_produto' %}"
-          class="custom-form style=max-height: 80vh;">
-            {% csrf_token %} {{ form }}
-            <button type="submit">
-              {{titlebutton}}
-            </button>
-          </form>
-          {% if form.errors %}
-          <div class="alert alert-danger" role="alert">
-            <h4 class="alert-heading">Erro ao cadastrar produto!</h4>
-            <p>Verifique os campos obrigatórios e tente novamente.</p>
-          </div>
-          {% endif %} {% if titlebutton == 'Editar' %}
-          <form
-            action="{% url 'deletar_produto' produto_id %}"
-            method="post"
-            class="custom-form"
-          >
-            {% csrf_token %}
-            <button type="submit" style="background-color: rgb(224, 37, 12)">
-              Apagar
-            </button>
-          </form>
-          {% endif %}        
-        </form>
+              style="
+                max-height: 90vh;
+                width: 45vw;
+                background-color: #f5f5f5;
+                padding: 20px;
+                border-radius: 10px;
+                flex-direction: column;
+                margin: 0;
+                align-items: center;
+              "
+            >
+              <h2
+                style="
+                  font-size: 1.5em;
+                  font-weight: bold;
+                  margin-bottom: 20px;
+                  margin: auto;
+                  text-align: center;
+                "
+              >
+                Cadastrar produto
+              </h2>
+              <form
+                method="POST"
+                action="{% url 'cadastrar_produto' %}"
+                class="custom-form style=max-height: 80vh;"
+              >
+                {% csrf_token %} {{ form }}
+                <button type="submit">{{titlebutton}}</button>
+              </form>
+              {% if form.errors %}
+              <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Erro ao cadastrar produto!</h4>
+                <p>Verifique os campos obrigatórios e tente novamente.</p>
+              </div>
+              {% endif %} {% if titlebutton == 'Editar' %}
+              <form
+                action="{% url 'deletar_produto' produto_id %}"
+                method="post"
+                class="custom-form"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  style="background-color: rgb(224, 37, 12)"
+                >
+                  Apagar
+                </button>
+              </form>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-    </div>  
+      <div
+        class="modal fade"
+        id="marcaModal"
+        tabindex="-1"
+        aria-labelledby="marcaModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="marcaModalLabel">
+                ADICIONAR NOVA MARCA
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="{% url 'cadastrar_marca' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="recipient-name" class="col-form-label"
+                    >NOME:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="marca"
+                    id="recipient-name"
+                    required
+                  />
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    VOLTAR
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    ADICIONAR
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <script src="{% static 'js\formatacao.js' %}"></script>
     <script>
@@ -161,6 +315,18 @@
           el.textContent = formatarTelefone(el.textContent);
         });
       });
+
+      function validatePrices() {
+        const priceMin = parseFloat(document.getElementById("priceMin").value);
+        const priceMax = parseFloat(document.getElementById("priceMax").value);
+
+        if (priceMin > priceMax) {
+          alert("O preço mínimo deve ser menor ou igual ao preço máximo.");
+          return false; // Impede o envio do formulário
+        }
+
+        return true; // Permite o envio do formulário
+      }
     </script>
   </body>
 </html>

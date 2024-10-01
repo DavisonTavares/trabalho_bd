@@ -5,11 +5,12 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from .models import Produto
-from .forms import ProdutoForm
-from django.db.models import Count
+from .forms import ProdutoForm, FiltroPrecoForm
+from django.db.models import Count, Q
 from fpdf import FPDF
 import unicodedata
 from fpdf import FPDF
@@ -80,21 +81,31 @@ def cadastrar_produto(request):
 
 def listar_produto(request):
     if request.method == 'POST':
+        print(request.POST)
         search_term = request.POST.get('search')
- 
+        priceMin = request.POST.get('priceMin') or 0
+        priceMax = request.POST.get('priceMax')
+       
         if search_term:
             # Retirar acentos e caracteres especiais da string
             search_term_normalized = unicodedata.normalize('NFKD', search_term)
             search_term_normalized = search_term_normalized.encode('ASCII', 'ignore').decode('ASCII')
             search_term_normalized = search_term_normalized.lower()
             # Filtrar produtos que contenham o termo de pesquisa, sem considerar acentos
-            produtos = Produto.objects.filter(nomeFormatado__contains=search_term_normalized)
+           # Filtrando produtos com Q para combinar as condições
+            produtos = Produto.objects.filter(
+                Q(nomeFormatado__contains=search_term_normalized) | Q(marca__nome__contains=search_term_normalized)
+            )
         else:
             produtos = Produto.objects.all()
+            
+        
+        if priceMax and priceMin:
+            produtos = produtos.filter(valor__gte=priceMin, valor__lte=priceMax)
     else:
         produtos = Produto.objects.all()
     marcas = Marca.objects.all()
-    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar'})
+    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'filtro': FiltroPrecoForm()})
 
 def cadastrar_marca(request):
     print(request.method)
