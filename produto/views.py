@@ -4,6 +4,7 @@ from .models import Produto, Marca
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,13 +16,14 @@ from fpdf import FPDF
 import unicodedata
 from fpdf import FPDF
 
-
+@login_required
 def deletar_produto(request, produto_id):
     if request.method == 'POST':    
         Produto.objects.filter(id=produto_id).delete()
         return redirect(reverse_lazy('lista_produtos'))
     return HttpResponse(status=404)
 
+@login_required
 def editar_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
     
@@ -49,7 +51,8 @@ def editar_produto(request, produto_id):
     produtos = Produto.objects.all()
     return render(request, 'produto/produto_list.html', {'produtos': produtos, 'produto_id': produto_id, 'marcas': marcas, 'form': form, 'titlebutton': 'Editar'})
     
-    
+
+@login_required    
 def cadastrar_produto(request):
     if request.method == 'POST':
         form = ProdutoForm(request.POST)
@@ -79,6 +82,7 @@ def cadastrar_produto(request):
     marcas = Marca.objects.all()
     return render(request, 'produto/produto_form.html', {'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'marcas': marcas})
 
+@login_required
 def listar_produto(request):
     if request.method == 'POST':
         print(request.POST)
@@ -107,6 +111,7 @@ def listar_produto(request):
     marcas = Marca.objects.all()
     return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'filtro': FiltroPrecoForm()})
 
+@login_required
 def cadastrar_marca(request):
     print(request.method)
     if request.method == 'POST':
@@ -122,6 +127,7 @@ def cadastrar_marca(request):
             return render(request, 'produto/produto_form.html', {'errors': 'Erro ao cadastrar marca', 'form': ProdutoForm()})
     return HttpResponse(status=404)
 
+@login_required
 def gerar_relatorio(request):
     produtos = Produto.objects.all()
     

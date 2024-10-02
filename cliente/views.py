@@ -9,6 +9,8 @@ from django.db import IntegrityError, OperationalError
 from fpdf import FPDF
 import requests
 import unicodedata
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def limpar_cpf(cpf):
     return ''.join(filter(str.isdigit, cpf))
@@ -25,7 +27,8 @@ def formatar_cep(cep):
 def formatar_telefone(telefone):
         return f"({telefone[:2]}) {telefone[2:7]}-{telefone[7:]}"
 
-class cadastrar_cliente(CreateView):
+class cadastrar_cliente(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
     template_name = 'cliente\cliente_form.html'
     def cliente_return(self,id, cliente, endereco):# função para criar o objeto que será retornado caso ocorra um erro no cadastramento 
         cpf = formatar_cpf(cliente["cpf"]) # formata o cpf no padrão 111.111.111-11
@@ -119,7 +122,8 @@ class cadastrar_cliente(CreateView):
             cliente = self.cliente_return(0,dados_cliente,dados_endereco)
             return render(request, self.template_name, {'cliente':cliente, 'erro': f"Erro inesperado: {e}",'pagina':'cadastrar'})
         return redirect(reverse_lazy("lista_clientes"))
-class listar_cliente(ListView):
+class listar_cliente(LoginRequiredMixin, ListView):
+    login_url = '/login/'
     model = Cliente
     template_name = 'cliente\cliente_list.html'
     def post(self, request, *args, **kwargs):  
@@ -127,7 +131,8 @@ class listar_cliente(ListView):
         nome = unicodedata.normalize('NFKD', nome).encode('ASCII', 'ignore').decode('ASCII').lower()
         clientes = Cliente.objects.filter(nome_formatado__contains=nome)  # filtra os clientes pelo nome formatado caso ele contenha parte do nome
         return render(request, self.template_name, {'cliente_list': clientes})
-class editar_cliente(UpdateView):
+class editar_cliente(LoginRequiredMixin, UpdateView):
+    login_url = '/login/'
     model = Cliente
     form_class = ClienteForm
     template_name = 'cliente\cliente_form.html'
@@ -257,7 +262,8 @@ class editar_cliente(UpdateView):
 
         return redirect(reverse_lazy("lista_clientes"))
     
-class deletar_cliente(DeleteView):
+class deletar_cliente(LoginRequiredMixin, DeleteView):
+    login_url = '/login/'
     def get(self, request, *args, **kwargs):
         try:
             id = kwargs.get('cliente_id', None)
@@ -288,6 +294,8 @@ class deletar_cliente(DeleteView):
             return HttpResponseNotFound('Cliente não encontrado.')
         except Exception as e:
             return JsonResponse({'message': 'Erro ao excluir cliente.', 'error': str(e)}, status=500)
+
+@login_required
 def gerar_relatorio_cliente(request):
     clientes = Cliente.objects.all()
     

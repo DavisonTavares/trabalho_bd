@@ -21,12 +21,11 @@
 
                 <form action="{% if vendedor and not erro %}{% url 'editar_vendedor' vendedor.id %}{% else %}{% url 'cadastrar_vendedor' %}{% endif %}" method="post" class="custom-form">
                     {% csrf_token %}
-
-                    <div>
-                        <label for="nome">Nome:</label>
-                        <input type="text" id="nome" name="nome" value="{% if vendedor %}{{vendedor.nome }}{% else %}{{''}}{% endif %}" required>
-                    </div>
-
+                
+                    <!-- Renderização do formulário -->
+                    {{ form.as_p }}
+                
+                    <!-- Botão de submissão -->
                     <button type="submit">{% if vendedor and not erro %}Atualizar Vendedor{% else %}Cadastrar Vendedor{% endif %}</button>
                 </form>
 

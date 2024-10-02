@@ -5,6 +5,7 @@ from produto.views import cadastrar_produto, editar_produto, listar_produto, del
 from vendedor.views import cadastrar_vendedor, listar_vendedor, editar_vendedor, deletar_vendedor,gerar_relatorio_vendedor
 from vendedor.views import cadastrar_vendedor, listar_vendedor, editar_vendedor, deletar_vendedor, gerar_relatorio_vendedor
 from pedido.views import cadastrar_pedido, editar_pedido, deletar_pedido, lista_pedidos
+from login.views import login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,5 @@ urlpatterns = [
     path('editar/<int:id>/', editar_pedido.as_view(), name='editar_pedido'),
     path('deletar/<int:id>/', deletar_pedido.as_view(), name='deletar_pedido'),
     path('lista_pedidos/', lista_pedidos.as_view(), name='lista_pedidos'),
+    path('login/', login, name='login'),
 ]

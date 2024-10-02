@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'pedido',
     'endereco',
     'vendedor',
+    'login',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
+LOGIN_URL = '/login/'  # URL para a página de login
 
 TIME_ZONE = 'America/Fortaleza'
 

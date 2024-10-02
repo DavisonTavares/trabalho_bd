@@ -3,13 +3,17 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Pedido
 from .forms import PedidoForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class lista_pedidos(View):
+
+class lista_pedidos(LoginRequiredMixin, View):
+    login_url = '/login/'
     def get(self, request):
         pedidos = Pedido.objects.all()
         return render(request, 'pedido_lista.html', {'pedidos': pedidos})
 
-class cadastrar_pedido(View):
+class cadastrar_pedido(LoginRequiredMixin, View):
+    login_url = '/login/'
     def get(self, request):
         form = PedidoForm()
         return render(request, 'pedido_form.html', {'form': form, 'pagina': 'cadastrar'})
@@ -21,7 +25,8 @@ class cadastrar_pedido(View):
             return redirect('lista_pedidos')
         return render(request, 'pedido_form.html', {'form': form, 'pagina': 'cadastrar'})
 
-class editar_pedido(View):
+class editar_pedido(LoginRequiredMixin, View):
+    login_url = '/login/'
     def get(self, request, id):
         pedido = get_object_or_404(Pedido, id_venda=id)
         form = PedidoForm(instance=pedido)
@@ -35,7 +40,8 @@ class editar_pedido(View):
             return redirect('lista_pedidos')
         return render(request, 'pedido_form.html', {'form': form, 'pagina': 'editar', 'pedido': pedido})
 
-class deletar_pedido(View):
+class deletar_pedido(LoginRequiredMixin, View):
+    login_url = '/login/'
     def get(self, request, id):
         pedido = get_object_or_404(Pedido, id_venda=id)
         return render(request, 'pedido_confirmar_delete.html', {'pedido': pedido})
