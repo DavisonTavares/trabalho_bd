@@ -7,6 +7,13 @@
     <title>{% if pedido and not erro %}Atualizar Pedido{% else %}Cadastrar Pedido{% endif %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    
+    <!-- Include the plugin's CSS and JS: -->
+    <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
 </head>
 <body>
     {% include 'sidebar.html' with title_page='CADASTRAR PEDIDO' %}
@@ -21,13 +28,16 @@
     
             <form action="{% if pedido and pagina == 'editar' %}{% url 'editar_pedido' pedido.id %}{% else %}{% url 'cadastrar_pedido' %}{% endif %}" method="post" class="custom-form">
                 {% csrf_token %}
-                
-                <!-- Produto -->
                 <div>
-                    <label for="id_produto">Produto:</label>
-                    {{ form.id_produto }}
+                <!-- Produto -->
+                <select id="id_produto" name="produto" required multiple>
+                    ]
+                    
+                    {% for produto in form.id_produto %}
+                        <option value="{{ produto }}"></option>
+                    {% endfor %}
+                </select>
                 </div>
-
                 <!-- Vendedor -->
                 <div>
                     <label for="id_vendedor">Vendedor:</label>
@@ -72,6 +82,11 @@
             {% endif %}
         </div>
     </section>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#example-getting-started').multiselect();
+        });
+    </script>
     </main>
 </body>
 </html>
