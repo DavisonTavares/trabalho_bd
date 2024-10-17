@@ -78,13 +78,7 @@
                             {% endif %}
                         </select>
                     </div>
-    
-                    <!-- CEP -->
-                    <div>
-                        <label for="cep">CEP:</label>
-                        <input type="text" id="cep" name="cep" maxlength="9" value="{% if cliente %}{{cliente.cep }}{% else %}{{''}}{% endif %}" required pattern="[0-9]{5}-[0-9]{3}" placeholder="12345-678" oninput="applyMask(event)">
-                        <span id="cep-error" style="color: red; display: none;">CEP inválido!</span>
-                    </div>
+                    
                 <div style="display: flex; justify-content: space-between; flex-direction: row;">
                     <!-- Telefone -->
                     <div>
