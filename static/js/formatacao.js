@@ -117,17 +117,18 @@ if (exampleModal) {
 
 function selecionarCidades(){
     const estadoSelect = document.getElementById('naturalidade_estado');
-    const selectedOption = estadoSelect.options[estadoSelect.selectedIndex]; // Pega a opção selecionada
-    const estadoId = selectedOption.getAttribute('data-id');
+    const selectedOptionEstado = estadoSelect.options[estadoSelect.selectedIndex] // Pega a opção selecionada
+    const estadoId = selectedOptionEstado.getAttribute('data-id')
     const cidadeSelect = document.getElementById('naturalidade_cidade')
-    cidadeSelect.innerHTML = '<option value="" disabled selected>Carregando...</option>'
+    const selectedOptionCidade = estadoSelect.options[cidadeSelect.selectedIndex] // Pega a opção selecionada
+    const Cidade = selectedOptionCidade.getAttribute('data-id')
+    
 
     // Fazer a requisição para a API do IBGE para buscar as cidades do estado selecionado
     axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoId}/municipios`)
         .then(response => {
             const cidades = response.data
-            // Limpar as opções atuais do select de cidades
-            cidadeSelect.innerHTML = '<option value="" disabled selected>Selecione sua cidade</option>'
+            
             
             // Adicionar as novas opções de cidades
             cidades.forEach(cidade => {

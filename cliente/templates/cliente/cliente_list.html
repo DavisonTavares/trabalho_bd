@@ -44,7 +44,6 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>CPF</th>
                     <th>Telefone</th>
                     <th>Endereço</th>
                     <th >Ações</th>
@@ -54,7 +53,6 @@
                 {% for cliente in cliente_list %}
                     <tr>
                         <td >{{ cliente.nome }}</td>
-                        <td class="cpf"> {{ cliente.cpf }}</td>
                         <td class="telefone"> {{ cliente.telefone }}</td>
                         <td class="endereco"> {{ cliente.endereco }}</td>
                         

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 from django.shortcuts import render,redirect
-from .models import Cliente
+from .models import Cliente,ViewClientes
 from endereco.models import Endereco
 from django.views.generic import ListView,CreateView,UpdateView,DeleteView
 from django.urls import reverse_lazy
@@ -127,6 +127,9 @@ class listar_cliente(LoginRequiredMixin, ListView):
     login_url = '/login/'
     model = Cliente
     template_name = 'cliente\cliente_list.html'
+    def get(self, request, *args, **kwargs): 
+        clientes = ViewClientes.objects.all()
+        return render(request, self.template_name, {'cliente_list': clientes})
     def post(self, request, *args, **kwargs):  
         nome = request.POST.get('search')
         nome = unicodedata.normalize('NFKD', nome).encode('ASCII', 'ignore').decode('ASCII').lower()
@@ -158,32 +161,6 @@ class editar_cliente(LoginRequiredMixin, UpdateView):
             campos_endereco.get('estado'),
             campos_endereco.get('cep')
         ])
-    def campos_alterados(self,cliente,endereco,dados): # função que verifica quais campos de cliente forma alterados
-        campos_cliente = {}
-        campos_endereco = {}
-        # Atualiza campos do cliente
-        if dados['cpf'] != cliente.cpf:
-            campos_cliente['cpf'] = dados['cpf']
-        if dados['nome'] != cliente.nome:
-            campos_cliente['nome'] = dados['nome']
-        if dados['telefone'] != cliente.telefone:
-            campos_cliente['telefone'] = dados['telefone']
-        # Atualiza campos do endereço
-        if dados['rua'] != endereco.rua:
-            campos_endereco['rua'] = dados['rua']
-        if dados['numero'] != endereco.numero:
-            campos_endereco['numero'] = dados['numero']
-        if dados['complemento'] != endereco.complemento:
-            campos_endereco['complemento'] = dados['complemento']
-        if dados['bairro'] != endereco.bairro:
-            campos_endereco['bairro'] = dados['bairro']
-        if dados['cidade'] != endereco.cidade:
-            campos_endereco['cidade'] = dados['cidade']
-        if dados['estado'] != endereco.estado:
-            campos_endereco['estado'] = dados['estado']
-        if dados['cep'] != endereco.cep:
-            campos_endereco['cep'] = dados['cep']
-        return campos_cliente, campos_endereco
     def cliente_return(self,id,cliente,endereco):
         cpf = formatar_cpf(cliente.cpf)
         cep = formatar_cep(endereco.cep)
@@ -269,7 +246,7 @@ class editar_cliente(LoginRequiredMixin, UpdateView):
             'cep': cep}
             cliente = Cliente.objects.get(id=id)
             endereco = cliente.endereco
-            self.atualizar_cliente_endereco(id,campos_cliente,endereco.id,campos_endereco) #
+            self.atualizar_cliente_endereco(id,campos_cliente,endereco.id,campos_endereco) # utiliza a procedure update_cliente_endereco
         except IntegrityError:
             # Renderiza o template com uma mensagem de erro
             cliente = self.cliente_return(id,cliente,endereco)

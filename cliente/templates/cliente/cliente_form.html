@@ -35,7 +35,7 @@
                     <!-- time -->
                     <div>
                         <label for="time">Time do coração:</label>
-                        <select id="time" name="time" required>
+                        <select id="time" name="time"{% if cliente %}disabled{% endif %} required>
                             <option value="" disabled selected>Selecione seu time</option>
                             
                             {% for time in times %}
@@ -45,7 +45,7 @@
                     </div>
                     <div>
                         <label for="audiovisual">Você assiste ?:</label>
-                        <select id="audiovisual" name="audiovisual" required>
+                        <select id="audiovisual" name="audiovisual"{% if cliente %}disabled{% endif %} required>
                             <option value="" disabled selected>Selecione um</option>
                             
                             {% for audiovisual in audiovisuais %}
@@ -56,8 +56,8 @@
                     <!-- naturalidade -->
                     <div>
                         <label for="naturalidade_estado">Estado de nascimento:</label>
-                        <select id="naturalidade_estado" name="naturalidade_estado" required oninput="selecionarCidades()">
-                            <option value="" disabled selected>Selecione seu estado</option>
+                        <select id="naturalidade_estado" name="naturalidade_estado" {% if cliente %}disabled{% endif %} required oninput="selecionarCidades()">
+                            <option value="" disabled selected>Selecione seu estado de nascimento</option>
                             {% for estado in estados %}
                             <option value="{{ estado.nome }}"{% if cliente and cliente.naturalidade_estado == estado.nome %}selected{% endif %} data-id="{{ estado.id }}">{{ estado.nome }}</option>
                             {% endfor %}
@@ -67,10 +67,12 @@
                 </div>
                     <div>
                         <label for="naturalidade_cidade">Cidade de nascimento:</label>
-                        <select id="naturalidade_cidade" name="naturalidade_cidade" required>
+                        <select id="naturalidade_cidade" name="naturalidade_cidade" {% if cliente %}disabled{% endif %} required>
                             <option value="" disabled selected>Selecione sua cidade</option>
                             {% if cliente %}
-                            <option value="{{ cliente.naturalidade_cidade }}"selected>{{ cliente.naturalidade_cidade }}</option>
+                            <option value="{{ cliente.naturalidade_cidade }}"selected data-id="{{ cliente.naturalidade_cidade}}">{{ cliente.naturalidade_cidade}}</option>
+                            {% else %}
+                            <option value="" disabled selected>Selecione sua cidade de nascimento</option>
                             <script>
                                 selecionarCidades()
                             </script>

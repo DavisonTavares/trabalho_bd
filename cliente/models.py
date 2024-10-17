@@ -16,3 +16,11 @@ class Cliente(models.Model):
     naturalidade_estado_formatado = models.CharField(max_length=30,editable=False, default="")
     def __str__(self):
         return f"{self.nome} (CPF: {self.cpf})"
+class ViewClientes(models.Model):
+    nome = models.CharField(max_length=255)
+    telefone = models.CharField(max_length=20)
+    endereco = models.CharField(max_length=500)  # Ajuste o max_length conforme necessário
+
+    class Meta:
+        managed = False  # Isso indica que o Django não deve tentar criar ou migrar essa tabela
+        db_table = 'view_clientes'
