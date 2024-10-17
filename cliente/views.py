@@ -11,6 +11,7 @@ import requests
 import unicodedata
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import connection
 
 def limpar_cpf(cpf):
     return ''.join(filter(str.isdigit, cpf))
@@ -136,6 +137,27 @@ class editar_cliente(LoginRequiredMixin, UpdateView):
     model = Cliente
     form_class = ClienteForm
     template_name = 'cliente\cliente_form.html'
+    def atualizar_cliente_endereco(self,cliente_id, campos_cliente, endereco_id, campos_endereco):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            CALL update_cliente_endereco(
+                %s::UUID, %s::VARCHAR, %s::VARCHAR, %s::VARCHAR, 
+                %s::INT, %s::VARCHAR, %s::VARCHAR, %s::VARCHAR, 
+                %s::VARCHAR, %s::VARCHAR, %s::VARCHAR
+            );
+        """, [
+            cliente_id,
+            campos_cliente.get('nome'),
+            campos_cliente.get('cpf'),
+            campos_cliente.get('telefone'),
+            endereco_id,
+            campos_endereco.get('rua'),
+            campos_endereco.get('numero'),
+            campos_endereco.get('bairro'),
+            campos_endereco.get('cidade'),
+            campos_endereco.get('estado'),
+            campos_endereco.get('cep')
+        ])
     def campos_alterados(self,cliente,endereco,dados): # função que verifica quais campos de cliente forma alterados
         campos_cliente = {}
         campos_endereco = {}
@@ -232,23 +254,22 @@ class editar_cliente(LoginRequiredMixin, UpdateView):
             cidade = request.POST.get('cidade')
             estado = request.POST.get('estado')
             cep = limpar_cep(request.POST.get('cep'))
-            dados = {
+            campos_cliente = {
             'nome': nome,
             'cpf': cpf,
             'telefone': telefone,
-            'rua': rua,
+            
+            }
+            campos_endereco = {'rua': rua,
             'numero': numero,
             'complemento': complemento,
             'bairro': bairro,
             'cidade': cidade,
             'estado': estado,
-            'cep': cep
-            }
+            'cep': cep}
             cliente = Cliente.objects.get(id=id)
             endereco = cliente.endereco
-            campos_cliente, campos_endereco = self.campos_alterados(cliente,endereco,dados)
-            Cliente.objects.filter(id=id).update(**campos_cliente)
-            Endereco.objects.filter(id=endereco.id).update(**campos_endereco)
+            self.atualizar_cliente_endereco(id,campos_cliente,endereco.id,campos_endereco) #
         except IntegrityError:
             # Renderiza o template com uma mensagem de erro
             cliente = self.cliente_return(id,cliente,endereco)
