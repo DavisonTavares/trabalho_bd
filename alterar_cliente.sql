@@ -1,33 +1,32 @@
-CREATE OR REPLACE FUNCTION update_cliente_endereco(
-    cliente_id UUID,
-    novo_nome VARCHAR,
-    novo_cpf VARCHAR,
-    novo_telefone VARCHAR,
-    endereco_id INT,
-    nova_rua VARCHAR,
-    novo_numero VARCHAR,
-    novo_bairro VARCHAR,
-    nova_cidade VARCHAR,
-    novo_estado VARCHAR,
-    novo_cep VARCHAR
+CREATE OR REPLACE PROCEDURE update_cliente_endereco(
+    IN cliente_id UUID,
+    IN nome VARCHAR,
+    IN cpf VARCHAR,
+    IN telefone VARCHAR,
+    IN endereco_id int,
+    IN rua VARCHAR,
+    IN numero VARCHAR,
+    IN bairro VARCHAR,
+    IN cidade VARCHAR,
+    IN estado VARCHAR,
+    IN cep VARCHAR
 )
-RETURNS VOID AS $$
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    
     UPDATE cliente_cliente
-    SET nome = novo_nome,
-        cpf = novo_cpf,
-        telefone = novo_telefone
+    SET nome = nome,
+        cpf = cpf,
+        telefone = telefone
     WHERE id = cliente_id;
 
-    
     UPDATE endereco_endereco
-    SET rua = nova_rua,
-        numero = novo_numero,
-        bairro = novo_bairro,
-        cidade = nova_cidade,
-        estado = novo_estado,
-        cep = novo_cep
+    SET rua = rua,
+        numero = numero,
+        bairro = bairro,
+        cidade = cidade,
+        estado = estado,
+        cep = cep
     WHERE id = endereco_id;
 END;
-$$ LANGUAGE plpgsql;
+$$;

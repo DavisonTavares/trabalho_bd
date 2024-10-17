@@ -128,7 +128,7 @@ class listar_cliente(LoginRequiredMixin, ListView):
     model = Cliente
     template_name = 'cliente\cliente_list.html'
     def get(self, request, *args, **kwargs): 
-        clientes = ViewClientes.objects.all()
+        clientes = ViewClientes.objects.all() # view cliente apenas com os campos Nome,Telefone,Endereço
         return render(request, self.template_name, {'cliente_list': clientes})
     def post(self, request, *args, **kwargs):  
         nome = request.POST.get('search')
