@@ -82,7 +82,7 @@ def cadastrar_produto(request):
     marcas = Marca.objects.all()
     return render(request, 'produto/produto_form.html', {'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'marcas': marcas})
 
-@login_required
+#@login_required
 def listar_produto(request):
     if request.method == 'POST':
         print(request.POST)
@@ -107,9 +107,12 @@ def listar_produto(request):
         if priceMax and priceMin:
             produtos = produtos.filter(valor__gte=priceMin, valor__lte=priceMax)
     else:
+        #verifica se o usuário está logado
+        # Verifica se existe um usuário logado
+        usuario_logado = request.user if request.user.is_authenticated else None
         produtos = Produto.objects.all()
     marcas = Marca.objects.all()
-    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'filtro': FiltroPrecoForm()})
+    return render(request, 'produto/produto_list.html', {'produtos': produtos, 'marcas': marcas, 'form': ProdutoForm(), 'titlebutton': 'Cadastrar', 'filtro': FiltroPrecoForm(), 'usuario_logado': usuario_logado})
 
 @login_required
 def cadastrar_marca(request):

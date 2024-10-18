@@ -33,9 +33,10 @@
         editarProdutoModal.show();
       });
     </script>
-    {% endif %} {% include 'sidebar.html' with title_page='PRODUTOS' %}
+    {% endif %} {% include 'sidebar.html' with title_page='PRODUTOS' userLogged=usuario_logado %}
     <main>
       <div class="container-fluid">
+        {% if usuario_logado %}
         <div
           style="
             margin-right: 10px;
@@ -151,6 +152,7 @@
           </button>
         </div>
       </div>
+      {% endif %}
       <div
         style="
           display: flex;
