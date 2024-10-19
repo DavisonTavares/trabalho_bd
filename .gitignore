@@ -34,3 +34,4 @@ media/
 # Diretórios de migração Django
 */migrations/
 !*/migrations/__init__.py
+setup/db_config.py
