@@ -23,9 +23,9 @@
   </head>
   <body>
     {% if '/editar_produto/' in request.path %}
-    <!-- Insira aqui o código ou o modal que deseja mostrar -->
+    
     <script>
-      // Caso queira abrir o modal com JavaScript
+      
       document.addEventListener("DOMContentLoaded", function () {
         var editarProdutoModal = new bootstrap.Modal(
           document.getElementById("createClienteModal")
@@ -165,23 +165,30 @@
         "
       >
         {% for produto in produtos %}
-        <div
-          class="product-card"
-          onClick="window.location.href='{% url 'editar_produto' produto.id %}'"
-        >
-          <div class="product-image-container">
-            <img
-              src="{{ produto.url_imagem }}"
-              alt="Produto Genérico"
-              class="product-image"
-            />
-            <div class="product-volume-overlay">
-              <p class="product-volume">{{ produto.litragem|format_volume }}</p>
-            </div>
+        <div>
+          <div
+              class="product-card"
+              onClick="window.location.href='{% url 'editar_produto' produto.id %}'">
+              <div class="product-image-container" >
+                <img
+                  src="{{ produto.url_imagem }}"
+                  alt="Produto Genérico"
+                  class="product-image"
+                />
+                <div class="product-volume-overlay">
+                  <p class="product-volume">{{ produto.litragem|format_volume }}</p>
+                </div>
+              </div>
+          
+              <div class="product-info">
+                <h2 class="product-name">{{ produto.nome }}</h2>
+                <p class="product-price">R$ {{ produto.valor|floatformat:2 }}</p>
+              </div>
           </div>
-          <div class="product-info">
-            <h2 class="product-name">{{ produto.nome }}</h2>
-            <p class="product-price">R$ {{ produto.valor|floatformat:2 }}</p>
+          <div class="product-actions">
+            <button class="add-to-cart-btn" onclick="adicionarAoCarrinho('{{ produto.id }}', '{{ produto.nome }}', {{ produto.valor }})">
+                Adicionar ao Carrinho
+            </button>
           </div>
         </div>
         {% endfor %}

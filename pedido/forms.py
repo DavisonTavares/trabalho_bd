@@ -11,9 +11,6 @@ class PedidoForm(forms.ModelForm):
         
     quantidade = forms.IntegerField(min_value=1, label='Quantidade')
     valor_prod = forms.DecimalField(max_digits=10, decimal_places=2, label='Valor do Produto')
-    
-    
     id_produto = forms.ModelMultipleChoiceField(queryset=Produto.objects.all(), label='Produtos')
-    
     id_vendedor = forms.ModelChoiceField(queryset=Vendedor.objects.all(), label='Vendedor')
     id_cliente = forms.ModelChoiceField(queryset=Cliente.objects.all(), label='Cliente')

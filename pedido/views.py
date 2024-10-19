@@ -5,7 +5,6 @@ from .models import Pedido
 from .forms import PedidoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
 class lista_pedidos(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request):
