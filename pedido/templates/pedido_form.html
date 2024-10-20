@@ -41,7 +41,12 @@
                 <!-- Vendedor -->
                 <div>
                     <label for="id_vendedor">Vendedor:</label>
-                    {{ form.id_vendedor }}
+                    <select id="id_vendedor" name="id_vendedor" required>
+                        <option value="" disabled selected>Selecione o vendedor</option>
+                        {% for vendedor in vendedores %}
+                            <option value="{{ vendedor.id }}">{{ vendedor.username }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <!-- Cliente -->

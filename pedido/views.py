@@ -1,10 +1,9 @@
-# pedido/views.py
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Pedido
 from .forms import PedidoForm
+from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 
 class lista_pedidos(LoginRequiredMixin, View):
     login_url = '/login/'
@@ -16,29 +15,37 @@ class cadastrar_pedido(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request):
         form = PedidoForm()
-        return render(request, 'pedido_form.html', {'form': form, 'pagina': 'cadastrar'})
+        vendedores = User.objects.all()  # Carrega todos os usuários como vendedores
+        return render(request, 'pedido_form.html', {'form': form, 'vendedores': vendedores, 'pagina': 'cadastrar'})
 
     def post(self, request):
         form = PedidoForm(request.POST)
         if form.is_valid():
-            form.save()
+            pedido = form.save(commit=False)
+            pedido.save()
+            form.save_m2m()  # Salva as relações ManyToMany
             return redirect('lista_pedidos')
-        return render(request, 'pedido_form.html', {'form': form, 'pagina': 'cadastrar'})
+        vendedores = User.objects.all()
+        return render(request, 'pedido_form.html', {'form': form, 'vendedores': vendedores, 'pagina': 'cadastrar'})
 
 class editar_pedido(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request, id):
         pedido = get_object_or_404(Pedido, id_venda=id)
         form = PedidoForm(instance=pedido)
-        return render(request, 'pedido_form.html', {'form': form, 'pagina': 'editar', 'pedido': pedido})
+        vendedores = User.objects.all()
+        return render(request, 'pedido_form.html', {'form': form, 'vendedores': vendedores, 'pagina': 'editar', 'pedido': pedido})
 
     def post(self, request, id):
         pedido = get_object_or_404(Pedido, id_venda=id)
         form = PedidoForm(request.POST, instance=pedido)
         if form.is_valid():
-            form.save()
+            pedido = form.save(commit=False)
+            pedido.save()
+            form.save_m2m()  # Salva as relações ManyToMany
             return redirect('lista_pedidos')
-        return render(request, 'pedido_form.html', {'form': form, 'pagina': 'editar', 'pedido': pedido})
+        vendedores = User.objects.all()
+        return render(request, 'pedido_form.html', {'form': form, 'vendedores': vendedores, 'pagina': 'editar', 'pedido': pedido})
 
 class deletar_pedido(LoginRequiredMixin, View):
     login_url = '/login/'
