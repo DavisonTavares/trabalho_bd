@@ -1,5 +1,6 @@
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
+from cliente.models import Cliente
 from .models import Pedido
 from .forms import PedidoForm, PedidoItemFormSet
 from django.contrib.auth.models import User
@@ -7,9 +8,25 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class lista_pedidos(LoginRequiredMixin, View):
     login_url = '/login/'
+    
     def get(self, request):
-        pedidos = Pedido.objects.all()
-        return render(request, 'pedido_lista.html', {'pedidos': pedidos})
+        return render(request, 'pedido_lista.html')
+
+    def post(self, request):
+        search_query = request.POST.get('search', '')  
+        cliente = None
+        pedidos = None
+
+        if search_query:
+            cliente = Cliente.objects.filter(nome__icontains=search_query).first()
+            if cliente:
+                pedidos = Pedido.objects.filter(id_cliente=cliente)
+
+        return render(request, 'pedido_lista.html', {
+            'cliente': cliente,
+            'pedidos': pedidos,
+            'search_query': search_query
+        })
 
 class cadastrar_pedido(LoginRequiredMixin, View):
     login_url = '/login/'
