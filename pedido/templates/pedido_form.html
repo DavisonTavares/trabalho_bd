@@ -30,9 +30,9 @@
                 {% csrf_token %}
                 <div>
                 <!-- Produto -->
-                <select id="id_produto" name="produto" required multiple>
-                    ]
-                    
+                <label for="id_produto">Produto:</label>
+                <select id="id_produto" name="produto" required>  
+                    <option value="" disabled selected>Selecione o Produto</option>                  
                     {% for produto in form.id_produto %}
                         <option value="{{ produto }}"></option>
                     {% endfor %}
@@ -42,7 +42,7 @@
                 <div>
                     <label for="id_vendedor">Vendedor:</label>
                     <select id="id_vendedor" name="id_vendedor" required>
-                        <option value="" disabled selected>Selecione o vendedor</option>
+                        <option value="" disabled selected>Selecione o Vendedor</option>
                         {% for vendedor in vendedores %}
                             <option value="{{ vendedor.id }}">{{ vendedor.username }}</option>
                         {% endfor %}
