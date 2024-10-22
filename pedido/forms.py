@@ -1,19 +1,21 @@
 from django import forms
-from .models import Pedido
-from produto.models import Produto
-from vendedor.models import Vendedor
-from cliente.models import Cliente
+from django.forms import inlineformset_factory
+from .models import Pedido, PedidoItem
 
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
-        fields = ['quantidade', 'valor_prod', 'id_produto', 'id_vendedor', 'id_cliente']
-        
-    quantidade = forms.IntegerField(min_value=1, label='Quantidade')
-    valor_prod = forms.DecimalField(max_digits=10, decimal_places=2, label='Valor do Produto')
-    
-    
-    id_produto = forms.ModelMultipleChoiceField(queryset=Produto.objects.all(), label='Produtos')
-    
-    id_vendedor = forms.ModelChoiceField(queryset=Vendedor.objects.all(), label='Vendedor')
-    id_cliente = forms.ModelChoiceField(queryset=Cliente.objects.all(), label='Cliente')
+        fields = ['id_vendedor', 'id_cliente']
+
+class PedidoItemForm(forms.ModelForm):
+    class Meta:
+        model = PedidoItem
+        fields = ['produto', 'quantidade', 'valor_prod']
+
+PedidoItemFormSet = inlineformset_factory(
+    Pedido, PedidoItem,
+    form=PedidoItemForm,
+    fields=['produto', 'quantidade', 'valor_prod'],
+    extra=1,
+    can_delete=True
+)
