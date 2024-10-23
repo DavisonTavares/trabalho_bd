@@ -53,17 +53,14 @@
                         {% for pedido in pedidos %}
                             <tr>
                                 <td>{{ pedido.id_venda }}</td>
-                                <td>{{ pedido.id_vendedor.nome }}</td>
+                                <td>{{ pedido.id_vendedor.username }}</td>
                                 <td>{{ pedido.id_cliente.nome }}</td>
                                 <td>
-                                    <form action="{% url 'editar_pedido' pedido.id_venda %}" method="get" class="custom-form">
-                                        <button type="submit">Editar</button>
-                                    </form>
                                     <form action="{% url 'deletar_pedido' pedido.id_venda %}" method="post" class="custom-form">
                                         {% csrf_token %}
                                         <button type="submit" style="background-color: rgb(224, 37, 12);">Excluir</button>
                                     </form>
-                                </td>
+                                </td>                                
                             </tr>
                         {% endfor %}
                     </tbody>
