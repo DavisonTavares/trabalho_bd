@@ -51,19 +51,39 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pedido in pedidos %}
+                        {% for pedido,soma,produto in context %}
+                        
                             <tr>
                                 <td>{{ pedido.id_venda }}</td>
                                 <td>{{ pedido.id_vendedor.username }}</td>
                                 <td>{{ pedido.id_cliente.nome }}</td>
                                 <td>
-                                    <form action="{% url 'deletar_pedido' pedido.id_venda %}" method="post" class="custom-form">
+                                    <ul>
+                                            
+                                                
+                                        {% for item in produto %}
+                                            <li>
+                                                <strong>Produto:</strong> {{ item.produto.nome }}<br>
+                                                <strong>Quantidade:</strong> {{ item.quantidade }}<br>
+                                                <strong>Preço:</strong> {{ item.valor_prod }}
+                                            </li>           
+                                            
+                                                    
+                                        {% endfor %} 
+                                        <li>  
+                                            <strong>Total:</strong> {{ soma }} 
+                                        </li> 
+                                    </ul>
+                                </td>
+                                <td>
+                                    <form action="{% url 'deletar_pedido' pedido.id_venda  %}" method="post" class="custom-form">
                                         {% csrf_token %}
                                         <button type="submit" style="background-color: rgb(224, 37, 12);">Excluir</button>
                                     </form>
                                 </td>                                
                             </tr>
-                        {% endfor %}
+                        
+                        {% endfor %} 
                     </tbody>
                 </table>
             {% else %}

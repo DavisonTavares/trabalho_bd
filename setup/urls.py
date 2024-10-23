@@ -4,7 +4,7 @@ from cliente.views import cadastrar_cliente,listar_cliente,editar_cliente,deleta
 from produto.views import cadastrar_produto, editar_produto, listar_produto, deletar_produto, gerar_relatorio, cadastrar_marca
 from vendedor.views import cadastrar_vendedor, listar_vendedor, editar_vendedor, deletar_vendedor,gerar_relatorio_vendedor
 from vendedor.views import cadastrar_vendedor, listar_vendedor, editar_vendedor, deletar_vendedor, gerar_relatorio_vendedor
-from pedido.views import cadastrar_pedido, editar_pedido, deletar_pedido, lista_pedidos
+from pedido.views import cadastrar_pedido, deletar_pedido, lista_pedidos
 from login.views import login
 
 urlpatterns = [
@@ -27,8 +27,8 @@ urlpatterns = [
     path('vendedor/deletar/<uuid:pk>/', deletar_vendedor.as_view(), name='deletar_vendedor'),
     path('gerar_relatorio_vendedor/', gerar_relatorio_vendedor, name='gerar_relatorio_vendedor'),
     path('cadastrar/', cadastrar_pedido.as_view(), name='cadastrar_pedido'),
-    path('editar/<uuid:id>/', editar_pedido.as_view(), name='editar_pedido'),
+    
     path('deletar/<uuid:id>/', deletar_pedido.as_view(), name='deletar_pedido'),
-    path('lista_pedidos/', lista_pedidos.as_view(), name='lista_pedidos'),
+    path('lista_pedidos/<uuid:cliente_id>', lista_pedidos.as_view(), name='lista_pedidos'),
     path('login/', login, name='login'),
 ]
