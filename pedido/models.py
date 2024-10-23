@@ -1,12 +1,12 @@
 from django.db import models
 from produto.models import Produto
-from vendedor.models import Vendedor
+from django.contrib.auth.models import User
 from cliente.models import Cliente
 import uuid
 
 class Pedido(models.Model):
     id_venda = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    id_vendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, null=True, blank=True)
+    id_vendedor = models.ForeignKey(User, on_delete=models.CASCADE)
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
 
     def __str__(self):

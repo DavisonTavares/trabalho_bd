@@ -2,10 +2,12 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from cliente.models import Cliente
 from .models import Pedido
+from cliente.models import ViewClientesPedido
+from vendedor.models import Vendedor
 from .forms import PedidoForm, PedidoItemFormSet
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.core import serializers
 class lista_pedidos(LoginRequiredMixin, View):
     login_url = '/login/'
     
@@ -34,9 +36,11 @@ class cadastrar_pedido(LoginRequiredMixin, View):
     def get(self, request):
         pedido_form = PedidoForm()
         item_formset = PedidoItemFormSet()
+        clientes = ViewClientesPedido.objects.all()
         return render(request, 'pedido_form.html', {
             'pedido_form': pedido_form,
             'item_formset': item_formset,
+            'clientes': serializers.serialize('json', clientes),
             'pagina': 'cadastrar'
         })
 

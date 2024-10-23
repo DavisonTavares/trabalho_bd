@@ -11,7 +11,7 @@ class PedidoItemForm(forms.ModelForm):
     class Meta:
         model = PedidoItem
         fields = ['produto', 'quantidade', 'valor_prod']
-
+    
 PedidoItemFormSet = inlineformset_factory(
     Pedido, PedidoItem,
     form=PedidoItemForm,

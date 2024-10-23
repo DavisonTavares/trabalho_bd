@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/forms.css' %}">
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     
-    <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-    <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
 </head>
 <body>
     {% include 'sidebar.html' with title_page=pagina|upper|stringformat:"s PEDIDO" %}
@@ -20,10 +16,13 @@
         <div class="container">
             <h2>{% if pagina == 'editar' %}Atualizar Pedido{% else %}Cadastrar Pedido{% endif %}</h2>
             <form action="" method="post">
+                {{ clientes|json_script:"clientes-data" }}
                 {% csrf_token %}
-                {{ pedido_form.as_p }}
+                {{ pedido_form }}
+                <p>{{ item_formset.management_form}}</p>
                 <h3>Itens do Pedido</h3>
                 {{ item_formset.management_form }}
+                <div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -40,12 +39,24 @@
                                 <td>{{ form.quantidade }}</td>
                                 <td>{{ form.valor_prod }}</td>
                                 <td>
-                                    {{ form.DELETE }}
+                                    <button type="submit" style="background-color: rgb(224, 37, 12);">Excluir</button>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                <div>
+                    <div>
+                    <span id="valor_produtos">Valor Produtos: </span>
+                    </div>
+                    <div>
+                    <span id="desconto">Valor Desconto: </span>
+                    </div>
+                    <div>
+                    <span id="total">Total Pedido: </span>
+                    </div>
+                </div>
+            </div>
                 <button type="submit" class="btn btn-primary">
                     {% if pagina == 'editar' %}Atualizar Pedido{% else %}Cadastrar Pedido{% endif %}
                 </button>
@@ -53,6 +64,109 @@
             </form>
         </div>
         <script>
+            function setupQuantityValidation(input) {
+               
+                let inputQuantidade = parseInt(input.value);
+                
+                            // Obtém o ID do select correspondente
+                let inputIdParts = input.id.split('-');
+                console.log(inputIdParts)
+                let index = inputIdParts[1]; // Obtém o número (0 ou 1, etc.)
+                            
+                // Constrói o ID do select correspondente
+                let selectId = `id_itens-${index}-produto`;
+                console.log(selectId)
+                let selectProduto = document.getElementById(selectId);
+                console.log(selectProduto)
+                let selectedOption = selectProduto.options[selectProduto.selectedIndex].text;
+                // Extrai a quantidade da string do select
+                let regex = /Quantidade:\s*(\d+)/;
+                let match = selectedOption.match(regex);
+                
+                if (match) {
+                    let quantidadeProduto = parseInt(match[1]);
+                
+                                // Compara as quantidades
+                    if (inputQuantidade > quantidadeProduto) {
+                        input.value = quantidadeProduto
+                        alert('A quantidade inserida excede o estoque disponível!');
+                        
+                    } 
+                }
+            }
+
+            function preencherValorProduto(selectElement) {
+                // Pega o valor da opção selecionada (pode ser uma string de descrição do produto)
+                let descricaoProduto = selectElement.options[selectElement.selectedIndex].text;
+                
+                // Usando expressão regular para capturar o valor na descrição do produto
+                let regexValor = /Valor:R\$\s?([\d,.]+)/;
+                let match = descricaoProduto.match(regexValor);
+
+                if (match) {
+                    // O valor será encontrado no primeiro grupo da regex (match[1])
+                    let valor = match[1];
+
+                    let selectIdParts = selectElement.id.split('-');
+                    
+                    let index = selectIdParts[1]; // Obtém o número (0 ou 1, etc.)
+                    let selectId = `id_itens-${index}-valor_prod`;
+                    
+                    let inputValorProd = document.getElementById(selectId);
+
+                    // Verifica se o input existe antes de tentar inserir o valor
+                    if (inputValorProd) {
+                        // Define o valor do input com o valor extraído da string
+                        inputValorProd.value = valor.replace(",", ".");
+                        inputValorProd.disabled = true
+                    } else {
+                        console.log("Input de valor não encontrado.");
+                    }
+                } else {
+                    console.log("Valor não encontrado na string.");
+                }
+            }
+            function verificarOpcoesDuplicadas() {
+                const selectedValues = new Set();
+                
+                // Primeira passagem: coleta todas as opções selecionadas
+                document.querySelectorAll("select[id^='id_itens-'][id$='-produto']").forEach(function(selectElement) {
+                    const selectedValue = selectElement.value;
+            
+                    if (selectedValue) { // Ignora opções vazias
+                        selectedValues.add(selectedValue);
+                    }
+                });
+            
+                // Segunda passagem: remove opções duplicadas
+                document.querySelectorAll("select[id^='id_itens-'][id$='-produto']").forEach(function(selectElement) {
+                    const options = selectElement.options;
+            
+                    for (let i = options.length - 1; i >= 0; i--) {
+                        const optionValue = options[i].value;
+            
+                        // Se a opção não está selecionada e já foi escolhida em outro select, remove
+                        if (optionValue && selectedValues.has(optionValue) && optionValue !== selectElement.value) {
+                            selectElement.remove(i);
+                        }
+                    }
+                });
+            }
+            function calcularTotal() {
+                const form = document.querySelectorAll('.item-form')
+                let total = 0
+                form.forEach(function(item) {
+                    inputs = item.querySelectorAll('input');
+                    console.log(item)
+                    quantidade = parseFloat(inputs[0].value) || 0
+                    valor = parseFloat(inputs[1].value) || 0
+                    total += quantidade*valor
+
+                })
+                const total_produtos = document.getElementById('valor_produtos').textContent  = `Valor Produtos R$ : ${total}`;
+
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 let totalForms = document.querySelector('#id_itens-TOTAL_FORMS');
                 let formContainer = document.querySelector('tbody');
@@ -61,25 +175,63 @@
                 addButton.addEventListener('click', function() {
                     let formNum = parseInt(totalForms.value);
                     let newForm = document.querySelectorAll('.item-form')[0].cloneNode(true);
-
+                    let select = newForm.querySelectorAll('select');
+                    select[0].id = `id_itens-${formNum}-produto`
                     // Update the form fields' names and IDs
-                    let formRegex = new RegExp('(-\\d+-|__prefix__)', 'g');
-                    newForm.innerHTML = newForm.innerHTML.replace(formRegex, '-' + formNum + '-');
+                    
 
                     // Clear the values in the input fields
                     let inputs = newForm.querySelectorAll('input');
+                    inputs[0].id = `id_itens-${formNum}-quantidade`
+                    inputs[1].id = `id_itens-${formNum}-valor_prod`
                     inputs.forEach(function(input) {
+                        
                         if (input.type !== 'hidden' && input.type !== 'checkbox') {
                             input.value = '';
                         } else if (input.type === 'checkbox') {
                             input.checked = false;
                         }
+
                     });
 
                     formContainer.appendChild(newForm);
                     totalForms.value = formNum + 1;
+                    verificarOpcoesDuplicadas();
+                    document.querySelectorAll("select[id^='id_itens-'][id$='-produto']").forEach(function(selectElement) {
+                        selectElement.addEventListener('change', function() {
+                            preencherValorProduto(selectElement);
+                            verificarOpcoesDuplicadas();
+                        });
+                    });
+                    document.querySelectorAll("input[id^='id_itens-'][id$='-quantidade']").forEach(function(inputQuantidade) {
+                        inputQuantidade.addEventListener('change', function() {
+                            setupQuantityValidation(inputQuantidade);
+                            calcularTotal()
+                        });
+                    });
                 });
             });
+            // Função para processar o valor do produto selecionado e preencher o campo correspondente
+            
+            document.querySelectorAll("select[id^='id_itens-'][id$='-produto']").forEach(function(selectElement) {
+                // Adiciona o evento 'change' a cada select
+                selectElement.addEventListener('change', function() {
+                    preencherValorProduto(selectElement);
+                    verificarOpcoesDuplicadas();
+
+                });
+            });
+            document.querySelectorAll("input[id^='id_itens-'][id$='-quantidade']").forEach(function(selectElement) {
+                selectElement.addEventListener('change', function() {
+                    setupQuantityValidation(selectElement);
+                    calcularTotal()
+                });
+            });
+            const clienteFormatado = JSON.parse(document.getElementById('clientes-data').textContent); 
+            const cliente = JSON.parse(clienteFormatado);
+            // Agora você pode usar a variável clientes no seu código JavaScript
+            console.log(cliente); // Exibe os clientes no console
+            
         </script>
     </main>
 </body>

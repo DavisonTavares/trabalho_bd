@@ -24,3 +24,13 @@ class ViewClientes(models.Model):
     class Meta:
         managed = False  # Isso indica que o Django não deve tentar criar ou migrar essa tabela
         db_table = 'view_clientes'
+class ViewClientesPedido(models.Model):
+    nome = models.CharField(max_length=255)
+    cpf = models.CharField(max_length=14)
+    telefone = models.CharField(max_length=20)
+    endereco = models.CharField(max_length=500)  # Ajuste o max_length conforme necessário
+    time = models.CharField(max_length=15, default="")
+    audiovisual = models.CharField(max_length=20, default="")
+    class Meta:
+        managed = False  # Isso indica que o Django não deve tentar criar ou migrar essa tabela
+        db_table = 'view_clientes_pedido'
