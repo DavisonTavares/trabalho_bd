@@ -19,7 +19,7 @@
                 {{ clientes|json_script:"clientes-data" }}
                 {% csrf_token %}
                 {{ pedido_form }}
-                <p>{{ item_formset.management_form}}</p>
+                
                 <h3>Itens do Pedido</h3>
                 {{ item_formset.management_form }}
                 <div>
@@ -176,12 +176,13 @@
                             console.log('eita bixo')
                             let desconto  = total*0.1
                             total -= total*0.1
-                            const valor_desconto = document.getElementById('desconto').textContent  = `Valor Desconto R$ : ${desconto}`;
-                            const valor_total = document.getElementById('total').textContent  = `Total Pedido R$ : ${total}`;
+                            const valor_desconto = document.getElementById('desconto').textContent  = `Valor Desconto R$ : ${desconto.toFixed(3)}`;
+                            const valor_total = document.getElementById('total').textContent  = `Total Pedido R$ : ${total.toFixed(2)}`;
                             form.forEach(function(item) {
                                 inputs = item.querySelectorAll('input');
                                 valor = parseFloat(inputs[1].value) || 0
-                                inputs[1].value = valor - valor*0.1
+                                let d = valor - valor *0.1
+                                inputs[1].value =d.toFixed(2)
                                 
                             })
                         }
@@ -193,7 +194,10 @@
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                let totalForms = document.querySelector('#id_itens-TOTAL_FORMS');
+                
+                let totalForms = document.getElementById('id_itens-TOTAL_FORMS');
+                console.log(totalForms)
+                totalForms.type = 'text'
                 let formContainer = document.querySelector('tbody');
                 let addButton = document.querySelector('#add-item');
 
@@ -202,13 +206,16 @@
                     let newForm = document.querySelectorAll('.item-form')[0].cloneNode(true);
                     let select = newForm.querySelectorAll('select');
                     select[0].id = `id_itens-${formNum}-produto`
+                    select[0].name = `itens-${formNum}-produto`
                     // Update the form fields' names and IDs
                     
 
                     // Clear the values in the input fields
                     let inputs = newForm.querySelectorAll('input');
                     inputs[0].id = `id_itens-${formNum}-quantidade`
+                    inputs[0].name = `itens-${formNum}-quantidade`
                     inputs[1].id = `id_itens-${formNum}-valor_prod`
+                    inputs[1].name = `itens-${formNum}-valor_prod`
                     inputs.forEach(function(input) {
                         
                         if (input.type !== 'hidden' && input.type !== 'checkbox') {
@@ -221,6 +228,7 @@
 
                     formContainer.appendChild(newForm);
                     totalForms.value = formNum + 1;
+                    console.log(totalForms.value)
                     verificarOpcoesDuplicadas();
                     document.querySelectorAll("select[id^='id_itens-'][id$='-produto']").forEach(function(selectElement) {
                         selectElement.addEventListener('change', function() {

@@ -23,6 +23,7 @@ class lista_pedidos(LoginRequiredMixin, View):
             cliente = Cliente.objects.filter(nome__icontains=search_query).first()
             if cliente:
                 pedidos = Pedido.objects.filter(id_cliente=cliente)
+                
 
         return render(request, 'pedido_lista.html', {
             'cliente': cliente,
@@ -47,7 +48,7 @@ class cadastrar_pedido(LoginRequiredMixin, View):
     def post(self, request):
         pedido_form = PedidoForm(request.POST)
         item_formset = PedidoItemFormSet(request.POST)
-        
+
         if pedido_form.is_valid() and item_formset.is_valid():
             pedido = pedido_form.save()
             itens = item_formset.save(commit=False)
