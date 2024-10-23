@@ -64,6 +64,8 @@
             </form>
         </div>
         <script>
+            const clienteFormatado = JSON.parse(document.getElementById('clientes-data').textContent); 
+            const clientes = JSON.parse(clienteFormatado);
             function setupQuantityValidation(input) {
                
                 let inputQuantidade = parseInt(input.value);
@@ -118,7 +120,7 @@
                     if (inputValorProd) {
                         // Define o valor do input com o valor extraído da string
                         inputValorProd.value = valor.replace(",", ".");
-                        inputValorProd.disabled = true
+                        inputValorProd.readOnly  = true
                     } else {
                         console.log("Input de valor não encontrado.");
                     }
@@ -163,7 +165,30 @@
                     total += quantidade*valor
 
                 })
+                const inputCliente = document.getElementById('id_id_cliente').value
+                console.log(inputCliente)
                 const total_produtos = document.getElementById('valor_produtos').textContent  = `Valor Produtos R$ : ${total}`;
+                clientes.forEach(function(cliente) {
+                    if(cliente.pk == inputCliente ){
+                        let endereco = (cliente.fields.endereco).split(',')[3].toLowerCase();
+                        console.log(endereco)
+                        if (cliente.fields.audiovisual == "One Piece"|| cliente.fields.time == "Flamengo"|| endereco == 'souza'){
+                            console.log('eita bixo')
+                            let desconto  = total*0.1
+                            total -= total*0.1
+                            const valor_desconto = document.getElementById('desconto').textContent  = `Valor Desconto R$ : ${desconto}`;
+                            const valor_total = document.getElementById('total').textContent  = `Total Pedido R$ : ${total}`;
+                            form.forEach(function(item) {
+                                inputs = item.querySelectorAll('input');
+                                valor = parseFloat(inputs[1].value) || 0
+                                inputs[1].value = valor - valor*0.1
+                                
+                            })
+                        }
+                        
+                    }
+                    
+                })
 
             }
 
@@ -227,10 +252,7 @@
                     calcularTotal()
                 });
             });
-            const clienteFormatado = JSON.parse(document.getElementById('clientes-data').textContent); 
-            const cliente = JSON.parse(clienteFormatado);
-            // Agora você pode usar a variável clientes no seu código JavaScript
-            console.log(cliente); // Exibe os clientes no console
+            
             
         </script>
     </main>

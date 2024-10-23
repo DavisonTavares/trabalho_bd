@@ -47,6 +47,7 @@ class cadastrar_pedido(LoginRequiredMixin, View):
     def post(self, request):
         pedido_form = PedidoForm(request.POST)
         item_formset = PedidoItemFormSet(request.POST)
+        
         if pedido_form.is_valid() and item_formset.is_valid():
             pedido = pedido_form.save()
             itens = item_formset.save(commit=False)
